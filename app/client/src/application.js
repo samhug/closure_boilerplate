@@ -38,7 +38,7 @@ closure_boilerplate.Application.prototype.onAjaxComplete_ = function(e) {
 
   var msg = resp['result'];
 
-  document.body.innerHTML = application.templates.greeting({ message: msg });
+  document.body.innerHTML = closure_boilerplate.templates.greeting({ message: msg });
 };
 
 

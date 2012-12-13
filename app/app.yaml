@@ -5,7 +5,7 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /_api/.*
+- url: /_/.*
   script: server.main.app
 
 - url: /
