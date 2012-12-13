@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+import os
+
+top = '.'
+out = 'build'
+
+def options(ctx):
+    ctx.load('google_closure')
+
+def configure(ctx):
+    ctx.load('google_closure')
+
+def build(bld):
+    bld.load('google_closure')
+
+    js_roots = [
+            os.path.join(bld.path.abspath(), 'src'),
+            os.path.join(bld.bldnode.abspath(), 'app/client/src'),
+            os.path.join(bld.path.abspath(), 'lib','closure-templates'),
+        ]
+
+    print(js_roots)
+
+    ## Closure Linter -- Detect style issues in the Javascript
+    #bld(features='gjslint', roots=js_roots)
+
+    ## Closure Stylesheets
+    bld(source=bld.path.ant_glob(['www/css/**/*.css', 'gss/**/*.gss']))
+
+    ## Closure Templates
+    bld(source=bld.path.ant_glob('src/**/*.soy'))
+
+    ## Closure Compiler
+    bld(
+            features  = 'closure_compiler',
+            roots     = js_roots,
+            namespace = 'closure_boilerplate.start',
+            target    = os.path.join(bld.path.abspath(), 'www/js/application.min.js')
+       )

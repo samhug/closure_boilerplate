@@ -1,0 +1,14 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+top = '.'
+out = 'build'
+
+def options(ctx):
+    ctx.load('appengine')
+
+def configure(ctx):
+    ctx.load('appengine')
+
+def build(ctx):
+    pass

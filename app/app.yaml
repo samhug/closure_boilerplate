@@ -1,0 +1,16 @@
+application: closure-boilerplate
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /_api/.*
+  script: server.main.app
+
+- url: /
+  static_files: client/www/index.html
+  upload: client/www/index.html
+
+- url: /
+  static_dir: client/www
