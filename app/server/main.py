@@ -1,11 +1,26 @@
-import webapp2
+from webapp2 import Route
 
-from webapp2_extras import json
+from api.Application import Application
+from api.handlers import BaseAPIHandler
+from api.messages import BaseAPIMessage
 
 
-class MainPage(webapp2.RequestHandler):
+class HelloHandler(BaseAPIHandler):
+
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.write(json.encode({'result': 'Hello World!'}))
+        self.response.message = BaseAPIMessage('Hello World!')
 
-app = webapp2.WSGIApplication([('/_/hello', MainPage)], debug=True)
+
+from time import strftime
+class TimeHandler(BaseAPIHandler):
+
+    def get(self):
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.message = BaseAPIMessage(strftime('%a, %d %b %Y %H:%M:%S'))
+
+
+app = Application([
+        Route('/_/hello', handler=HelloHandler, name='hello'),
+        Route('/_/time', handler=TimeHandler, name='time'),
+    ], debug=True)

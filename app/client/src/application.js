@@ -6,6 +6,7 @@ goog.require('closure_boilerplate.templates');
 
 goog.require('goog.dom');
 goog.require('goog.net.XhrIo');
+goog.require('soy');
 
 
 
@@ -38,7 +39,8 @@ closure_boilerplate.Application.prototype.onAjaxComplete_ = function(e) {
 
   var msg = resp['result'];
 
-  document.body.innerHTML = closure_boilerplate.templates.greeting({ message: msg });
+  document.body.appendChild(soy.renderAsFragment(
+      closure_boilerplate.templates.greeting, { message: msg }));
 };
 
 

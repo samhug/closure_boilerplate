@@ -4,3 +4,9 @@
 .lock-*
 
 build
+
+## vim -- https://github.com/github/gitignore/blob/master/Global/vim.gitignore
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
