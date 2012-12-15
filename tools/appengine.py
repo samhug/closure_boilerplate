@@ -24,7 +24,14 @@ def configure(ctx):
         ctx.fatal('Unable to locate `app.yaml`')
 
     ctx.env.APPLICATION_ROOT = os.path.dirname(ctx.env.APPLICATION_YAML)
-    print(ctx.env.APPLICATION_ROOT)
+
+
+def build(ctx):
+
+    # Copy the YAML file to the build directory
+    yaml = ctx.path.find_node(ctx.env.APPLICATION_YAML)
+    ctx(rule='cp ${SRC} ${TGT}', source=yaml, target=yaml.get_bld())
+
 
 def serve(ctx):
     print('Starting Development Server...')
@@ -46,8 +53,34 @@ def serve(ctx):
         Logs.pprint('RED', 'Development Server Interrupted... Shutting Down')
         proc.terminate()
 
+def deploy(ctx):
+    print('Deploying Application to AppEngine...')
+
+    cmd = "{python} {script} {options} update {project}".format(
+            python  = ctx.env.PYTHON[0],
+            script  = ctx.env.APPCFG,
+            project = ctx.env.APPLICATION_ROOT,
+            options = ' '.join([
+                '--oauth2',
+                '--no_cookies',
+                ]),
+        )
+
+    proc = Popen(cmd, shell=True)
+
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        Logs.pprint('RED', 'Development Server Interrupted... Shutting Down')
+        proc.terminate()
+
+
 Context.g_module.__dict__['serve'] = serve 
+Context.g_module.__dict__['deploy'] = deploy 
 
 class serve_cls(Build.InstallContext):
     cmd = 'serve'
     fun = 'serve'
+class deploy_cls(Build.InstallContext):
+    cmd = 'deploy'
+    fun = 'deploy'

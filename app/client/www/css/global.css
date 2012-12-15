@@ -2,8 +2,6 @@
 
 * { box-sizing: border-box; -moz-box-sizing: border-box }
 
-a img { border: none }
-
 html {
 	height: 100%;
 	background: #aaa;

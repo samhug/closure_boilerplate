@@ -5,10 +5,11 @@ top = '.'
 out = 'build'
 
 def options(ctx):
-    ctx.load('appengine')
+    pass
 
 def configure(ctx):
-    ctx.load('appengine')
-
-def build(ctx):
     pass
+
+def build(bld):
+    for node in bld.path.ant_glob('**/*.py'):
+        bld(rule='cp ${SRC} ${TGT}', source=node, target=node.get_bld())

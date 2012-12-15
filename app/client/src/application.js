@@ -51,5 +51,26 @@ closure_boilerplate.start = function() {
   new closure_boilerplate.Application();
 };
 
+
+/**
+ * Google Analytics Code
+ */
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-37051344-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script');
+  ga.type = 'text/javascript';
+  ga.async = true;
+  ga.src = ('https:' == document.location.protocol ?
+      'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ga, s);
+})();
+goog.exportSymbol('_gaq', _gaq);
+
+
 // Export the __bootstrap symbol so we have a way of starting the application.
 goog.exportSymbol('__bootstrap', closure_boilerplate.start);

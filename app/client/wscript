@@ -21,8 +21,6 @@ def build(bld):
             os.path.join(bld.path.abspath(), 'lib','closure-templates'),
         ]
 
-    print(js_roots)
-
     ## Closure Linter -- Detect style issues in the Javascript
     #bld(features='gjslint', roots=js_roots)
 
@@ -33,9 +31,11 @@ def build(bld):
     bld(source=bld.path.ant_glob('src/**/*.soy'))
 
     ## Closure Compiler
-    bld(
-            features  = 'closure_compiler',
-            roots     = js_roots,
-            namespace = 'closure_boilerplate.start',
-            target    = os.path.join(bld.path.abspath(), 'www/js/application.min.js')
-       )
+    bld.closure_compiler(
+            roots      = js_roots,
+            namespaces = ['__bootstrap'],
+            target     = bld.path.find_or_declare('www/js/application.js'),
+            compiler_flags = '',
+            name='JAVASCRIPT',
+            )
+
