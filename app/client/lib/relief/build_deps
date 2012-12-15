@@ -1,0 +1,3 @@
+python ../closure-library/closure/bin/build/depswriter.py \
+  --root_with_prefix="relief/  ../../../relief/relief/" \
+  > deps.js

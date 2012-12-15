@@ -1,0 +1,31 @@
+<!doctype html><html><head><title>relief.rpc.RPCService</title><link href="../../stylesheet.css" rel="stylesheet" type="text/css"></head><body><a href="../../index.html">Home</a><h1>Class relief.rpc.RPCService</h1><p>The RPC Service.</p>extends <a href="../../goog/Disposable.html">goog.Disposable</a><table class="method-list"><tr><td colspan="2"><strong>Instance Method Summary</strong></td></tr><tr><td class="method-list-cell method-access method-protected"></td><td class="method-list-cell method-cell"><code>disposeInternal()</code><br><p class="method-description">Deletes or nulls out any references to COM objects, DOM nodes, or other
+disposable objects. Classes that extend {@code goog.Disposable} should
+override this method.
+Not reentrant. To avoid calling it twice, it must only be called from the
+subclass' {@code disposeInternal} method. Everywhere else the public
+{@code dispose} method must be used.
+For example:
+<pre>
+mypackage.MyClass = function() {
+goog.base(this);
+// Constructor logic specific to MyClass.
+...
+};
+goog.inherits(mypackage.MyClass, goog.Disposable);
+
+mypackage.MyClass.prototype.disposeInternal = function() {
+goog.base(this, 'disposeInternal');
+// Dispose logic specific to MyClass.
+...
+};
+</pre></p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>execute(?relief.rpc.Command command)</code><br><p class="method-description">Asynchronously execute the request encapsulated in the given Command Object.</p></td></tr><tr><td class="method-list-cell method-access method-private"></td><td class="method-list-cell method-cell"><code>handleCacheHit_(?relief.rpc.Command cmd, ?Array vals)</code><br><p class="method-description">Calls the command object's onCacheHit method with the cached value.  Called
+in a setTimeout to preserve asynchronous behavior.</p></td></tr><tr><td class="method-list-cell method-access method-private"></td><td class="method-list-cell method-cell"><code>handleResponse_(string commandID, ?goog.net.XhrManager.Event event)</code><br><p class="method-description">The callback executed when a response comes in:
+- Determine which command this is a response for
+- Determine success or failure
+- Pass the event to the appropriate callback.  It is the command object's
+job to process the server's response.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>send(string id, string url, string= opt_method, string= opt_content, (Object|goog.structs.Map|null=) opt_headers, &lt;Any Type&gt; opt_priority, ?Function= opt_callback, number= opt_maxRetries) &#8658; ?goog.net.XhrManager.Request</code><br><p class="method-description">A simple method that creates a one-off request.  RPCService hooks the given
+callback right into the request and provides no further processing on the
+client's behalf.
+
+xhrMgr.send(id, url, opt_method, opt_content, opt_headers, opt_priority,
+opt_callback, opt_maxRetries);</p></td></tr></table></body></html>

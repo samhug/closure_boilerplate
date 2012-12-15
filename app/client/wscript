@@ -15,24 +15,36 @@ def configure(ctx):
 def build(bld):
     bld.load('google_closure')
 
-    js_roots = [
-            os.path.join(bld.path.abspath(), 'src'),
-            os.path.join(bld.bldnode.abspath(), 'app/client/src'),
-            os.path.join(bld.path.abspath(), 'lib','closure-templates'),
-        ]
+    src_roots = [bld.path.find_dir(p) for p in [
+            'src',
+            'lib/closure-templates',
+            'lib/relief/relief',
+        ]]
+
+    bld_roots = set()
+
+    for root in src_roots:
+        b_root = root.get_bld()
+        b_root.mkdir()
+        bld_roots.add(b_root)
+
+    roots = set(src_roots)
+    roots.update(bld_roots)
 
     ## Closure Linter -- Detect style issues in the Javascript
-    #bld(features='gjslint', roots=js_roots)
+    #bld(features='gjslint', roots=roots)
 
     ## Closure Stylesheets
-    bld(source=bld.path.ant_glob('gss/**/*.gss'))
+    source = bld.path.ant_glob([os.path.join(root.path_from(bld.path), '**/*.gss') for root in roots])
+    bld(source=source)
 
     ## Closure Templates
-    bld(source=bld.path.ant_glob('src/**/*.soy'))
+    source = bld.path.ant_glob([os.path.join(root.path_from(bld.path), '**/*.soy') for root in roots])
+    bld(source=source)
 
     ## Closure Compiler
     bld.closure_compiler(
-            roots      = js_roots,
+            roots      = [r.abspath() for r in roots],
             namespaces = ['__bootstrap'],
             target     = bld.path.find_or_declare('www/js/application.js'),
             compiler_flags = ['--compilation_level=ADVANCED_OPTIMIZATIONS'],
