@@ -24,9 +24,12 @@ def configure(ctx):
         ctx.fatal('Unable to locate `app.yaml`')
 
     ctx.env.APPLICATION_ROOT = os.path.dirname(ctx.env.APPLICATION_YAML)
+    ctx.env.APPLICATION_DIR = os.path.relpath(ctx.env.APPLICATION_ROOT, ctx.srcnode.abspath())
 
 
 def build(ctx):
+
+    app_dir = os.path.join(ctx.srcnode.abspath(), ctx.env.APPLICATION_DIR)
 
     # Copy the YAML file to the build directory
     yaml = ctx.path.find_node(ctx.env.APPLICATION_YAML)
@@ -39,7 +42,7 @@ def serve(ctx):
     serve_cmd = "{python} {server} {options} {project}".format(
             python  = ctx.env.PYTHON[0],
             server  = ctx.env.DEV_APPSERVER,
-            project = ctx.env.APPLICATION_ROOT,
+            project = os.path.join(ctx.bldnode.abspath(), ctx.env.APPLICATION_DIR),
             options = ' '.join([
                 '--use_sqlite',
                 ]),
@@ -59,7 +62,7 @@ def deploy(ctx):
     cmd = "{python} {script} {options} update {project}".format(
             python  = ctx.env.PYTHON[0],
             script  = ctx.env.APPCFG,
-            project = ctx.env.APPLICATION_ROOT,
+            project = os.path.join(ctx.bldnode.abspath(), ctx.env.APPLICATION_DIR),
             options = ' '.join([
                 '--oauth2',
                 '--no_cookies',

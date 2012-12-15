@@ -25,7 +25,7 @@ def build(bld):
     #bld(features='gjslint', roots=js_roots)
 
     ## Closure Stylesheets
-    bld(source=bld.path.ant_glob(['www/css/**/*.css', 'gss/**/*.gss']))
+    bld(source=bld.path.ant_glob('gss/**/*.gss'))
 
     ## Closure Templates
     bld(source=bld.path.ant_glob('src/**/*.soy'))
@@ -35,7 +35,10 @@ def build(bld):
             roots      = js_roots,
             namespaces = ['__bootstrap'],
             target     = bld.path.find_or_declare('www/js/application.js'),
-            compiler_flags = '',
-            name='JAVASCRIPT',
-            )
+            compiler_flags = ['--compilation_level=ADVANCED_OPTIMIZATIONS'],
+        )
+
+    # Copy the www directory
+    for node in bld.path.ant_glob('www/**/*'):
+        bld(rule='cp ${SRC} ${TGT}', source=node, target=node.get_bld())
 

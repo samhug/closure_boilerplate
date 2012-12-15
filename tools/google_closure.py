@@ -38,41 +38,19 @@ def configure(conf):
 
     sys.path.append(conf.env.CLOSURE_SCRIPTS)
 
-    #conf.check_python_module('treescan')
-
-
-'''
-@TaskGen.feature('closure_compiler')
-def closure_compiler(self):
-    namespace = getattr(self, 'namespace', 'application.start')
-
-    command = [self.env.PYTHON[0], self.env.CLOSURE_BUILDER]
-    command.append('--root='+os.path.join(self.env.CLOSURE_LIBRARY, 'closure/goog'))
-    command.append('--root='+os.path.join(self.env.CLOSURE_LIBRARY, 'third_party/closure/goog'))
-
-    if isinstance(self.roots, str):
-        self.roots = self.roots.split()
-    command += ['--root='+p for p in self.roots]
-
-    command.append('--output_mode=compiled')
-    command.append('--compiler_jar='+self.env.CLOSURE_COMPILER)
-    command.append('--namespace='+namespace)
-    command.append('--compiler_flags="--compilation_level=ADVANCED_OPTIMIZATIONS"')
-    command.append('--output_file='+self.target)
-
-    return self.bld.exec_command(' '.join(command))
-'''
 
 class closure_compiler_task(Task.Task):
 
     vars = ['PYTHON', 'CLOSURE_BUILDER', 'CLOSURE_LIBRARY', 'CLOSURE_COMPILER']
 
-    def __init__(self, namespaces, roots, target, compiler_flags, *k, **kw):
+    def __init__(self, namespaces, roots, target, compiler_flags=[], *k, **kw):
         Task.Task.__init__(self, *k, **kw)
 
         self.namespaces = namespaces
         self.target = target
         self.compiler_flags = compiler_flags
+
+        self.paths = None
 
         self.set_outputs(target)
 
@@ -97,10 +75,9 @@ class closure_compiler_task(Task.Task):
         return 0
 
     def scan(self):
-        
-        closurebuilder = __import__('closurebuilder')
         treescan = __import__('treescan')
         depstree = __import__('depstree')
+        closurebuilder = __import__('closurebuilder')
 
         sources = set()
 
@@ -118,14 +95,12 @@ class closure_compiler_task(Task.Task):
         base = closurebuilder._GetClosureBaseFile(sources)
         deps = [base] + tree.GetDependencies(input_namespaces)
 
-        deps = (os.path.relpath(p.GetPath(), self.bld.path.srcpath()) for p in deps)
-
-        dep_nodes = [self.bld.path.find_resource(s) for s in deps]
-
+        dep_paths = (os.path.relpath(s.GetPath(), self.bld.path.srcpath()) for s in deps)
+        dep_nodes = [self.bld.path.find_resource(p) for p in dep_paths]
+        
         self.set_inputs(dep_nodes)
 
         return (dep_nodes, [])
-
 
 from waflib.Configure import conf
 
@@ -133,7 +108,8 @@ from waflib.Configure import conf
 def closure_compiler(self, *k, **kw):
     kw['env'] = self.env
     tsk = closure_compiler_task(*k, **kw)
-    return self.add_to_group(tsk)
+    self.add_to_group(tsk)
+    return tsk
 
 
 @TaskGen.feature('gjslint')
@@ -165,7 +141,9 @@ TaskGen.declare_chain(name='template',
                 --cssHandlingScheme GOOG \
                 --outputPathFormat ${TGT} \
                 ${SRC}',
-        ext_in='.soy', ext_out='.soy.js')
+        ext_in='.soy', ext_out='.soy.js',
+        before='closure_compiler_task',
+        after='stylesheet')
 
 '''
         --pretty-print \
@@ -173,9 +151,11 @@ TaskGen.declare_chain(name='template',
         --output-renameing-map-format CLOSURE_UNCOMPILED \
         --rename CLOSURE \
 '''
+
 TaskGen.declare_chain(name='stylesheet',
         rule='${JAVA} -jar ${CLOSURE_STYLESHEETS} \
                 --output-file ${TGT} \
                 ${SRC}',
-        ext_in='.css .gss', ext_out='.min.css',
+        ext_in='.gss', ext_out='.css',
+        before='closure_compiler_task',
         reentrant = False)
