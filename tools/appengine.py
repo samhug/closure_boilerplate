@@ -5,44 +5,53 @@ from subprocess import Popen
 from waflib import *
 import os
 
+from waflib.Configure import conf
+
 def options(ctx):
     pass
 
-def configure(ctx):
-    """
-    Try and locate an Appengine SDK
-    """
+@conf
+def find_appengine_sdk(ctx, path=None):
+    ctx.find_program('dev_appserver.py', path_list=path, var='APPENGINE_DEV_APPSERVER')
+    ctx.find_program('appcfg.py', path_list=path, var='APPENGINE_APPCFG')
 
+@conf
+def find_appengine_app(ctx, path='.'):
+    app_root = ctx.path.find_dir(path)
+    if not app_root:
+        ctx.fatal('Unable to locate application directory ({0})'.format(path))
+
+    yaml = app_root.find_node('app.yaml')
+    if not yaml:
+        ctx.fatal('Unable to locate application YAML in ({0})'.format(app_root.nice_path()))
+
+    ctx.env.APPENGINE_APP_ROOT = app_root.abspath()
+    ctx.env.APPENGINE_APP_YAML = yaml.abspath()
+
+def configure(ctx):
     ctx.load('python')
     ctx.check_python_version(minver=(2,7,0))
 
-    ctx.find_program('dev_appserver.py', var='DEV_APPSERVER')
-    ctx.find_program('appcfg.py', var='APPCFG')
-
-    ctx.env.APPLICATION_YAML = ctx.find_file('app.yaml', path_list=['.', 'app'])
-    if not ctx.env.APPLICATION_YAML:
-        ctx.fatal('Unable to locate `app.yaml`')
-
-    ctx.env.APPLICATION_ROOT = os.path.dirname(ctx.env.APPLICATION_YAML)
-    ctx.env.APPLICATION_DIR = os.path.relpath(ctx.env.APPLICATION_ROOT, ctx.srcnode.abspath())
-
 
 def build(ctx):
-
-    app_dir = os.path.join(ctx.srcnode.abspath(), ctx.env.APPLICATION_DIR)
-
-    # Copy the YAML file to the build directory
-    yaml = ctx.path.find_node(ctx.env.APPLICATION_YAML)
+    # Copy YAML file to the build directory
+    yaml = ctx.root.find_node(ctx.env.APPENGINE_APP_YAML)
+    if not yaml:
+        ctx.fatal('Unable to locate YAML file at ({0})'.format(ctx.env.APPENGINE_APP_YAML))
     ctx(rule='cp ${SRC} ${TGT}', source=yaml, target=yaml.get_bld())
 
 
 def serve(ctx):
     print('Starting Development Server...')
 
+    app_node = ctx.root.find_dir(ctx.env.APPENGINE_APP_ROOT)
+    if not app_node:
+        ctx.fatal('Unable to locate application directory at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
+
     serve_cmd = "{python} {server} {options} {project}".format(
             python  = ctx.env.PYTHON[0],
-            server  = ctx.env.DEV_APPSERVER,
-            project = os.path.join(ctx.bldnode.abspath(), ctx.env.APPLICATION_DIR),
+            server  = ctx.env.APPENGINE_DEV_APPSERVER,
+            project = app_node.get_bld().abspath(),
             options = ' '.join([
                 '--use_sqlite',
                 ]),
@@ -59,10 +68,16 @@ def serve(ctx):
 def deploy(ctx):
     print('Deploying Application to AppEngine...')
 
+    #TODO: Remove use of subprocess here.
+
+    app_dir = ctx.root.find_dir(ctx.env.APPENGINE_APP_ROOT)
+    if not app_dir:
+        ctx.fatal('Unable to locate application at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
+
     cmd = "{python} {script} {options} update {project}".format(
             python  = ctx.env.PYTHON[0],
-            script  = ctx.env.APPCFG,
-            project = os.path.join(ctx.bldnode.abspath(), ctx.env.APPLICATION_DIR),
+            script  = ctx.env.APPENGINE_APPCFG,
+            project = app_dir.get_bld().abspath(),
             options = ' '.join([
                 '--oauth2',
                 '--no_cookies',
@@ -74,7 +89,7 @@ def deploy(ctx):
     try:
         proc.wait()
     except KeyboardInterrupt:
-        Logs.pprint('RED', 'Development Server Interrupted... Shutting Down')
+        Logs.pprint('RED', 'Deployment Interrupted... Shutting Down')
         proc.terminate()
 
 

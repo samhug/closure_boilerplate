@@ -1,8 +1,0 @@
-<!doctype html><html><head><title>relief.auth.AuthManager</title><link href="../../stylesheet.css" rel="stylesheet" type="text/css"></head><body><a href="../../index.html">Home</a><h1>Class relief.auth.AuthManager</h1><p>AuthManager is an abstract class which provides the interface for auth
-managers.  It extends EventTarget with the expectation that its subclasses
-will accept listeners for and dispatch authentication events such as login
-and logout.</p>extends <a href="../../goog/events/EventTarget.html">goog.events.EventTarget</a><table class="method-list"><tr><td colspan="2"><strong>Instance Method Summary</strong></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>getCurrentUser(function ((null|relief.auth.User)): ? callback)</code><br><p class="method-description">In addition to letting clients add listeners for auth/auth events,
-AuthManager provides the ability to directly query the object for its
-user's current authorization status via the getCurrentUser method.
-This method requires a callback since it is possible it will be called while
-a request to the server for these details is being made.</p></td></tr></table></body></html>

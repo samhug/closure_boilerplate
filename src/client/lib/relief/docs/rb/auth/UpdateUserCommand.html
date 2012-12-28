@@ -1,0 +1,15 @@
+<!doctype html><html><head><title>rb.auth.UpdateUserCommand</title><link href="../../stylesheet.css" rel="stylesheet" type="text/css"></head><body><a href="../../index.html">Home</a><h1>Class rb.auth.UpdateUserCommand</h1><p>A Command subclass for updating a user's record on the server with a new
+display name.</p>extends <a href="../../relief/rpc/Command.html">relief.rpc.Command</a><table class="method-list"><tr><td colspan="2"><strong>Instance Method Summary</strong></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>getData() &#8658; (string|undefined)</code><br><p class="method-description">This method is called by the RPCService when formulating the call to the
+server.  getData serializes the data for use as an XHR POST payload.  If no
+data is to be sent to the server, the method must return undefined.
+
+All subclasses that should have POST content must define a getData method.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>onFailure(?goog.net.XhrManager.Event event)</code><br><p class="method-description">This method is called by the RPCService on a failed response.
+
+For simpler implementations, onFailure can simply be a pointer to the
+onSuccess method, but this is discouraged for more complex logic.
+
+All subclasses must define an onFailure method.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>onSuccess(?goog.net.XhrManager.Event event)</code><br><p class="method-description">This method is called by the RPCService on a successful response.
+Each one will need to know how to process the specific XHR returned data into
+the appropriate CommandResponse object.
+
+All subclasses must define an onSuccess method.</p></td></tr></table></body></html>

@@ -1,5 +1,0 @@
-@def BG_COLOR              rgb(235, 239, 249);
-
-body {
-      background-color: BG_COLOR;
-}

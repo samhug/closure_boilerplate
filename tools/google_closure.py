@@ -3,40 +3,39 @@
 
 import os, sys
 from waflib import Task, TaskGen
+from waflib.Configure import conf
 
-def configure(conf):
+def options(ctx):
+    pass
 
-    conf.load('python')
-    conf.find_program('java', var='JAVA')
+@conf
+def find_closure_tools(ctx, path='.'):
 
-    conf.find_program('gjslint.py',
-            path_list=os.path.join(conf.path.abspath(), 'lib', 'closure_linter'),
-            var='CLOSURE_LINTER')
+    tool_path = ctx.path.find_dir(path)
+    if not tool_path:
+        ctx.fatal('Unable to locate tool path ({0})'.format(path))
 
-    conf.find_program('fixjsstyle.py',
-            path_list=os.path.join(conf.path.abspath(), 'lib', 'closure_linter'),
-            var='CLOSURE_LINTER_FIX')
+    def find_tool(name, var, path=tool_path):
+        node = path.find_node(name)
+        if not node:
+            ctx.fatal('Unable to locate the ({0}) tool.'.format(name))
+        setattr(ctx.env, var, node.abspath())
 
-    conf.find_program('compiler.jar',
-            path_list=os.path.join(conf.path.abspath(), 'tools','closure-compiler'),
-            var='CLOSURE_COMPILER_JAR')
+    find_tool('closure_linter/gjslint.py', 'CLOSURE_LINTER')
+    find_tool('closure_linter/fixjsstyle.py', 'CLOSURE_LINTER_FIX')
+    find_tool('closure-compiler/compiler.jar', 'CLOSURE_COMPILER_JAR')
+    find_tool('closure-templates/SoyToJsSrcCompiler.jar', 'CLOSURE_TEMPLATES_JAR')
+    find_tool('closure-stylesheets/closure-stylesheets.jar', 'CLOSURE_STYLESHEETS_JAR')
 
-    conf.find_program('SoyToJsSrcCompiler.jar',
-            path_list=os.path.join(conf.path.abspath(), 'lib','closure-templates'),
-            var='CLOSURE_TEMPLATES')
+    find_tool('closure-library', 'CLOSURE_LIBRARY')
+    find_tool('closure/bin/build', 'CLOSURE_SCRIPTS', path=ctx.root.find_node(ctx.env.CLOSURE_LIBRARY))
+    find_tool('closurebuilder.py', 'CLOSURE_BUILDER', path=ctx.root.find_node(ctx.env.CLOSURE_SCRIPTS))
 
-    conf.find_program('closure-stylesheets.jar',
-            path_list=os.path.join(conf.path.abspath(), 'lib','closure-stylesheets'),
-            var='CLOSURE_STYLESHEETS')
+    sys.path.append(ctx.env.CLOSURE_SCRIPTS)
 
-    conf.find_program('closurebuilder.py',
-            path_list=os.path.join(conf.path.abspath(), 'lib','closure-library','closure','bin','build'),
-            var='CLOSURE_BUILDER')
-
-    conf.env.CLOSURE_LIBRARY  = os.path.join(conf.path.abspath(), 'lib', 'closure-library')
-    conf.env.CLOSURE_SCRIPTS  = os.path.join(conf.env.CLOSURE_LIBRARY, 'closure/bin/build')
-
-    sys.path.append(conf.env.CLOSURE_SCRIPTS)
+def configure(ctx):
+    ctx.load('python')
+    ctx.find_program('java', var='JAVA')
 
 
 class closure_compiler_task(Task.Task):
@@ -47,7 +46,6 @@ class closure_compiler_task(Task.Task):
         Task.Task.__init__(self, *k, **kw)
 
         self.namespaces = namespaces
-        self.target = target
         self.compiler_flags = compiler_flags
 
         self.paths = None
@@ -63,10 +61,16 @@ class closure_compiler_task(Task.Task):
     def run(self):
         jscompiler = __import__('jscompiler')
 
+        ## Compile
         compiled_source = jscompiler.Compile(
                 self.env.CLOSURE_COMPILER_JAR,
                 [s.abspath() for s in self.inputs],
                 self.compiler_flags)
+
+        '''
+        ## Concatenate
+        compiled_source = ''.join([s.read()+'\n' for s in self.inputs])
+        '''
 
         if compiled_source is None:
             self.fatal('JavaScript compilation failed.')
@@ -115,28 +119,34 @@ def closure_compiler(self, *k, **kw):
 @TaskGen.feature('gjslint')
 def gjslint(self):
 
-    command = [self.env.PYTHON, self.env.CLOSURE_LINTER, '--strict', '-r']
+    command = [
+            self.env.PYTHON[0],
+            self.env.CLOSURE_LINTER,
+            '--strict', '--summary',
+            ]
 
-    if isinstance(self.roots, str):
-        self.roots = self.roots.split()
-    command += self.roots
-
+    for root in self.roots:
+        command += ['-r', root.abspath()]
+    
     return self.bld.exec_command(command)
 
 @TaskGen.feature('fixjsstyle')
 def fixjsstyle(self):
 
-    command = [self.env.PYTHON, self.env.CLOSURE_LINTER_FIX, '--strict', '-r']
+    command = [
+            self.env.PYTHON[0],
+            self.env.CLOSURE_LINTER_FIX,
+            '--strict'
+            ]
 
-    if isinstance(self.roots, str):
-        self.roots = self.roots.split()
-    command += self.roots
+    for root in self.roots:
+        command += ['-r', root.abspath()]
 
     return self.bld.exec_command(command)
 
 from waflib import TaskGen
 TaskGen.declare_chain(name='template',
-        rule='${JAVA} -jar ${CLOSURE_TEMPLATES} \
+        rule='${JAVA} -jar ${CLOSURE_TEMPLATES_JAR} \
                 --shouldProvideRequireSoyNamespaces \
                 --cssHandlingScheme GOOG \
                 --outputPathFormat ${TGT} \
@@ -151,10 +161,10 @@ TaskGen.declare_chain(name='template',
         --output-renameing-map-format CLOSURE_UNCOMPILED \
         --rename CLOSURE \
 '''
-
+#TODO: Fix output file location
 TaskGen.declare_chain(name='stylesheet',
-        rule='${JAVA} -jar ${CLOSURE_STYLESHEETS} \
-                --output-file ${TGT} \
+        rule='${JAVA} -jar ${CLOSURE_STYLESHEETS_JAR} \
+                --output-file "\${SRC[0].parent.parent.find_or_declare("www/css")}\/\${TGT[0].name}" \
                 ${SRC}',
         ext_in='.gss', ext_out='.css',
         before='closure_compiler_task',

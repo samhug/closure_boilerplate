@@ -1,0 +1,65 @@
+<!doctype html><html><head><title>rb.post.GetPostCommand</title><link href="../../stylesheet.css" rel="stylesheet" type="text/css"></head><body><a href="../../index.html">Home</a><h1>Class rb.post.GetPostCommand</h1><p>A Command object for retrieving a single post from the server, given its
+unique slug.</p>extends <a href="../../relief/rpc/Command.html">relief.rpc.Command</a><table class="method-list"><tr><td colspan="2"><strong>Instance Method Summary</strong></td></tr><tr><td class="method-list-cell method-access method-protected"></td><td class="method-list-cell method-cell"><code>disposeInternal()</code><br><p class="method-description">Deletes or nulls out any references to COM objects, DOM nodes, or other
+disposable objects. Classes that extend {@code goog.Disposable} should
+override this method.
+Not reentrant. To avoid calling it twice, it must only be called from the
+subclass' {@code disposeInternal} method. Everywhere else the public
+{@code dispose} method must be used.
+For example:
+<pre>
+mypackage.MyClass = function() {
+goog.base(this);
+// Constructor logic specific to MyClass.
+...
+};
+goog.inherits(mypackage.MyClass, goog.Disposable);
+
+mypackage.MyClass.prototype.disposeInternal = function() {
+goog.base(this, 'disposeInternal');
+// Dispose logic specific to MyClass.
+...
+};
+</pre></p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>getCacheKeys() &#8658; ?Array</code><br><p class="method-description">When command.readFromCache is true, the RPC service calls this method to
+get the cache key(s) for which to query the cache.  If no
+value was stored for the given keys, the server request is executed.
+
+Subclasses that set readFromCache to true must define a getCacheKeys method.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>getCacheValues() &#8658; ?Array</code><br><p class="method-description">When a response comes back from the server for a cacheable request, the
+RPC service will call onSuccess so that the command object can perform
+whatever processing it needs (including execution of the client's callback).
+Once onSuccess returns, the RPC service calls this method to obtain the
+cache keys and values that should be stored.
+
+This method will only ever be called after the command's onSuccess method
+was called.
+
+If, on a future request, the RPC service finds a value for the cache keys,
+the values returned by this method will be what is passed to the command
+object's onCacheHit method.
+
+This method must return an array of record objects with a "key" attribute
+(this should be the same string as returned by getCacheKeys); and a "value"
+attribute, which is the value to be stored in the cache.
+
+The RPC service always stores items in the cache by value, meaning that
+the value attribute of this method's returned object must either implement
+relief.cache.Cloneable (ie., it has a clone() method) or it must be cast
+to a relief.cache.SimpleValue.  See documentation for rpc.cache.Cache
+for details on using these interfaces.
+
+Subclasses that set writeToCache to true must define a getCacheValues method.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>onCacheHit(?Array cacheVals)</code><br><p class="method-description">When the RPC service gets a cache hit for a command, it calls onCacheHit
+instead of onSuccess.  This allows getCacheValue to pre-process the response
+and store the value back in the cache in such a way that future cache hits
+can avoid any expensive re-processing.
+
+onCacheHit will receive a copy of whatever the previous getCacheValue
+returned.  This method should be able to return a response to the command's
+client from the cached value.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>onFailure(?goog.net.XhrManager.Event event)</code><br><p class="method-description">This method is called by the RPCService on a failed response.
+
+For simpler implementations, onFailure can simply be a pointer to the
+onSuccess method, but this is discouraged for more complex logic.
+
+All subclasses must define an onFailure method.</p></td></tr><tr><td class="method-list-cell method-access method-public"></td><td class="method-list-cell method-cell"><code>onSuccess(?goog.net.XhrManager.Event event)</code><br><p class="method-description">This method is called by the RPCService on a successful response.
+Each one will need to know how to process the specific XHR returned data into
+the appropriate CommandResponse object.
+
+All subclasses must define an onSuccess method.</p></td></tr></table></body></html>
