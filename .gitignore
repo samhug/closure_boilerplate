@@ -10,3 +10,11 @@ build
 *.un~
 Session.vim
 .netrwhist
+
+## Virtualenv -- https://github.com/github/gitignore/blob/master/Global/VirtualEnv.gitignore
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ss]cripts
+local
