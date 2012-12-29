@@ -106,7 +106,6 @@ class closure_compiler_task(Task.Task):
 
         return (dep_nodes, [])
 
-from waflib.Configure import conf
 
 @conf
 def closure_compiler(self, *k, **kw):
@@ -161,11 +160,29 @@ TaskGen.declare_chain(name='template',
         --output-renameing-map-format CLOSURE_UNCOMPILED \
         --rename CLOSURE \
 '''
-#TODO: Fix output file location
-TaskGen.declare_chain(name='stylesheet',
-        rule='${JAVA} -jar ${CLOSURE_STYLESHEETS_JAR} \
-                --output-file "\${SRC[0].parent.parent.find_or_declare("www/css")}\/\${TGT[0].name}" \
-                ${SRC}',
-        ext_in='.gss', ext_out='.css',
-        before='closure_compiler_task',
-        reentrant = False)
+
+class closure_stylesheets_task(Task.Task):
+
+    vars = ['JAVA', 'CLOSURE_STYLESHEETS_JAR']
+
+    def __init__(self, stylesheet, target, *k, **kw):
+        Task.Task.__init__(self, *k, **kw)
+
+        self.set_inputs([stylesheet])
+        self.set_outputs([target])
+
+    def run(self):
+        command = [self.env.JAVA, '-jar',
+                self.env.CLOSURE_STYLESHEETS_JAR,
+                '--output-file', self.outputs[0].abspath(),
+                self.inputs[0].abspath()
+                ]
+
+        return self.bld.exec_command(command)
+
+@conf
+def closure_stylesheets(self, *k, **kw):
+    kw['env'] = self.env
+    tsk = closure_stylesheets_task(*k, **kw)
+    self.add_to_group(tsk)
+    return tsk

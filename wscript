@@ -65,8 +65,13 @@ def build(ctx):
     ctx(features='gjslint', roots=app_roots)
 
     ## Closure Stylesheets
-    #TODO: Fix this, its broken.
-    #ctx(source=client_dir.ant_glob('gss/**/*.gss'))
+    stylesheets_dir = client_dir.find_or_declare('gss')
+    target_dir = client_dir.find_or_declare('www/css')
+    for node in stylesheets_dir.ant_glob('**/*.gss'):
+        ctx.closure_stylesheets(
+                stylesheet=node,
+                target=target_dir.find_or_declare(node.path_from(stylesheets_dir)).change_ext('.css')
+                )
 
     ## Closure Templates
     source = itertools.chain.from_iterable([root.ant_glob('**/*.soy') for root in roots])
@@ -84,6 +89,7 @@ def build(ctx):
             target     = client_dir.find_or_declare('www/js/application.js'),
             compiler_flags = compiler_flags,
         )
+
 
     # Copy the www directory
     for node in client_dir.ant_glob('www/**/*'):
