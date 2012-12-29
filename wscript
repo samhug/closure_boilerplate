@@ -80,13 +80,15 @@ def build(ctx):
     ## Closure Compiler
     compiler_flags = []
     #compiler_flags += ['--compilation_level=SIMPLE_OPTIMIZATIONS']
-    compiler_flags += ['--compilation_level=ADVANCED_OPTIMIZATIONS']
+    #compiler_flags += ['--compilation_level=ADVANCED_OPTIMIZATIONS']
     compiler_flags.append('--create_source_map='+client_dir.find_or_declare('www/js/source_map.js').abspath())
 
     ctx.closure_compiler(
-            roots      = [r.abspath() for r in roots],
-            namespaces = ['__bootstrap'],
-            target     = client_dir.find_or_declare('www/js/application.js'),
+            roots        = [r.abspath() for r in roots],
+            namespaces   = ['__bootstrap'],
+            target       = client_dir.find_or_declare('www/js/application.js'),
+            #compile_type = 'concat',
+            compile_type = 'advanced',
             compiler_flags = compiler_flags,
         )
 

@@ -42,7 +42,7 @@ class closure_compiler_task(Task.Task):
 
     vars = ['PYTHON', 'CLOSURE_BUILDER', 'CLOSURE_LIBRARY', 'CLOSURE_COMPILER']
 
-    def __init__(self, namespaces, roots, target, compiler_flags=[], *k, **kw):
+    def __init__(self, namespaces, roots, target, compile_type=None, compiler_flags=[], *k, **kw):
         Task.Task.__init__(self, *k, **kw)
 
         self.namespaces = namespaces
@@ -51,6 +51,18 @@ class closure_compiler_task(Task.Task):
         self.paths = None
 
         self.set_outputs(target)
+
+        self.compile_type = compile_type
+        if compile_type == 'whitespace':
+            compiler_flags += ['--compilation_level=WHITESPACE']
+        elif compile_type == 'simple':
+            compiler_flags += ['--compilation_level=SIMPLE_OPTIMIZATIONS']
+        elif compile_type == 'advanced':
+            compiler_flags += ['--compilation_level=ADVANCED_OPTIMIZATIONS']
+        elif compile_type == 'concat' or compile_type is None:
+            pass # Default
+        else:
+            raise Execption('Unrecognized compile_type ({0})'.format(compile_type))
 
         self.roots = [
             os.path.join(self.env.CLOSURE_LIBRARY, 'closure/goog'),
@@ -61,16 +73,15 @@ class closure_compiler_task(Task.Task):
     def run(self):
         jscompiler = __import__('jscompiler')
 
-        ## Compile
-        compiled_source = jscompiler.Compile(
-                self.env.CLOSURE_COMPILER_JAR,
-                [s.abspath() for s in self.inputs],
-                self.compiler_flags)
-
-        '''
-        ## Concatenate
-        compiled_source = ''.join([s.read()+'\n' for s in self.inputs])
-        '''
+        if self.compile_type == 'concat':
+            ## Concatenate
+            compiled_source = ''.join([s.read()+'\n' for s in self.inputs])
+        else:
+            ## Compile
+            compiled_source = jscompiler.Compile(
+                    self.env.CLOSURE_COMPILER_JAR,
+                    [s.abspath() for s in self.inputs],
+                    self.compiler_flags)
 
         if compiled_source is None:
             self.fatal('JavaScript compilation failed.')
