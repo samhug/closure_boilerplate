@@ -61,8 +61,11 @@ def build(ctx):
     roots.update(lib_roots)
     roots.update({r.get_bld() for r in roots if r.get_bld().mkdir() or True})
 
+
     ## Closure Linter -- Detect style issues in the Javascript
     ctx(features='gjslint', roots=app_roots)
+
+    renaming_map = client_dir.find_or_declare('src/renaming_map.js')
 
     ## Closure Stylesheets
     stylesheets_dir = client_dir.find_or_declare('gss')
@@ -70,7 +73,8 @@ def build(ctx):
     for node in stylesheets_dir.ant_glob('**/*.gss'):
         ctx.closure_stylesheets(
                 stylesheet=node,
-                target=target_dir.find_or_declare(node.path_from(stylesheets_dir)).change_ext('.css')
+                target=target_dir.find_or_declare(node.path_from(stylesheets_dir)).change_ext('.css'),
+                renaming_map=renaming_map
                 )
 
     ## Closure Templates
@@ -84,6 +88,7 @@ def build(ctx):
     compiler_flags.append('--create_source_map='+client_dir.find_or_declare('www/js/source_map.js').abspath())
 
     ctx.closure_compiler(
+            inputs       = renaming_map,
             roots        = [r.abspath() for r in roots],
             namespaces   = ['__bootstrap'],
             target       = client_dir.find_or_declare('www/js/application.js'),

@@ -1,6 +1,9 @@
 goog.provide('closure_boilerplate.handlers.LandingHandler');
 
+goog.require('closure_boilerplate.templates');
 goog.require('relief.nav.Handler');
+
+goog.require('soy');
 
 
 
@@ -32,7 +35,8 @@ closure_boilerplate.handlers.LandingHandler = function(sp) {
  * @override
  */
 closure_boilerplate.handlers.LandingHandler.prototype.handle = function(path) {
-  this.sp_.getContentRoot().innerHTML = 'Welcome!';
+  this.sp_.getContentRoot().appendChild(soy.renderAsFragment(
+      closure_boilerplate.templates.landingPage));
 };
 
 

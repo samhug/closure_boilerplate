@@ -1,7 +1,6 @@
 goog.provide('__bootstrap');
 goog.provide('closure_boilerplate.Application');
 
-goog.require('closure_boilerplate.templates');
 goog.require('closure_boilerplate.urls');
 
 goog.require('goog.dom');
@@ -14,8 +13,6 @@ goog.require('relief.handlers.CommonServiceProvider');
 goog.require('relief.nav.NavManager');
 goog.require('relief.rpc.RPCService');
 goog.require('relief.utils');
-
-goog.require('soy');
 
 
 
