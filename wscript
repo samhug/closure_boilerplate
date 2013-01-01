@@ -16,8 +16,8 @@ def options(ctx):
     ctx.load('appengine', tooldir=TOOLDIR);
     ctx.load('google_closure', tooldir=TOOLDIR);
 
-    #ctx.add_option('--env', action='store', default='development',
-    #        help='Build environment (production, development)')
+    ctx.add_option('--mode', action='store', default='development',
+            help='Build environment (production, development)')
 
 def configure(ctx):
     ctx.load('appengine', tooldir=TOOLDIR);
@@ -33,7 +33,7 @@ def build(ctx):
     ctx.load('appengine', tooldir=TOOLDIR);
     ctx.load('google_closure', tooldir=TOOLDIR);
 
-    #print('Building in \'{0}\' mode.'.format(ctx.options.env))
+    print('Building project in \'{0}\' mode.'.format(ctx.options.mode))
 
     client_dir = ctx.path.find_dir('src/client')
     server_dir = ctx.path.find_dir('src/server')
@@ -65,36 +65,53 @@ def build(ctx):
     ## Closure Linter -- Detect style issues in the Javascript
     ctx(features='gjslint', roots=app_roots)
 
-    renaming_map = client_dir.find_or_declare('src/renaming_map.js')
+    css_renaming_map = client_dir.find_or_declare('src/renaming_map.js')
 
     ## Closure Stylesheets
+    params = {
+        }
+
     stylesheets_dir = client_dir.find_or_declare('gss')
     target_dir = client_dir.find_or_declare('www/css')
+
+    if ctx.options.mode == 'development':
+        params['pretty'] = True
+    elif ctx.options.mode == 'production':
+        params['renaming_map'] = css_renaming_map
+
     for node in stylesheets_dir.ant_glob('**/*.gss'):
         ctx.closure_stylesheets(
                 stylesheet=node,
                 target=target_dir.find_or_declare(node.path_from(stylesheets_dir)).change_ext('.css'),
-                renaming_map=renaming_map
-                )
+                **params
+        )
 
     ## Closure Templates
     source = itertools.chain.from_iterable([root.ant_glob('**/*.soy') for root in roots])
     ctx(source=source)
 
     ## Closure Compiler
-    compiler_flags = []
-    #compiler_flags += ['--compilation_level=SIMPLE_OPTIMIZATIONS']
-    #compiler_flags += ['--compilation_level=ADVANCED_OPTIMIZATIONS']
-    compiler_flags.append('--create_source_map='+client_dir.find_or_declare('www/js/source_map.js').abspath())
+    params = {
+            'inputs': [],
+        }
+
+    # Google analytics script
+    ga_script = client_dir.find_node('src/google_analytics.js')
+
+    if ctx.options.mode == 'development':
+        #params['source_map'] = client_dir.find_or_declare('www/js/source_map.js')
+        #params['source_map_url'] = '/js/source_map.js'
+        params['compile_type'] = 'simple'
+    elif ctx.options.mode == 'production':
+        params['compile_type'] = 'advanced'
+        params['inputs'].append(ga_script)
+        params['inputs'].append(css_renaming_map)
 
     ctx.closure_compiler(
-            inputs       = renaming_map,
             roots        = [r.abspath() for r in roots],
             namespaces   = ['__bootstrap'],
             target       = client_dir.find_or_declare('www/js/application.js'),
-            #compile_type = 'concat',
-            compile_type = 'advanced',
-            compiler_flags = compiler_flags,
+            **params
         )
 
 
@@ -105,3 +122,4 @@ def build(ctx):
     # Copy server scripts to the build directory
     for node in server_dir.ant_glob('**/*.py'):
         ctx(rule='cp ${SRC} ${TGT}', source=node, target=node.get_bld())
+

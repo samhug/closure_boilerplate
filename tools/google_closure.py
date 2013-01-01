@@ -42,7 +42,7 @@ class closure_compiler_task(Task.Task):
 
     vars = ['PYTHON', 'CLOSURE_BUILDER', 'CLOSURE_LIBRARY', 'CLOSURE_COMPILER']
 
-    def __init__(self, namespaces, roots, target, inputs=None, compile_type=None, compiler_flags=[], *k, **kw):
+    def __init__(self, namespaces, roots, target, inputs=None, source_map=None, source_map_url=None, compile_type=None, compiler_flags=[], *k, **kw):
         Task.Task.__init__(self, *k, **kw)
 
         self.treescan = __import__('treescan')
@@ -56,8 +56,14 @@ class closure_compiler_task(Task.Task):
         self.paths = None
 
         self.input_nodes = inputs or []
+        self.source_map = source_map
+        self.source_map_url = source_map_url
 
         self.set_outputs(target)
+
+        if not source_map is None:
+            compiler_flags.append('--create_source_map='+source_map.abspath())
+            compiler_flags.append('--source_map_format=V3')
 
         self.compile_type = compile_type
         if compile_type == 'whitespace':
@@ -91,6 +97,9 @@ class closure_compiler_task(Task.Task):
 
         if compiled_source is None:
             self.fatal('JavaScript compilation failed.')
+
+        if not self.source_map_url is None:
+            compiled_source = '//@ sourceMappingURL='+self.source_map_url+'\n'+compiled_source
 
         self.outputs[0].write(compiled_source)
         return 0
