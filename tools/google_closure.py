@@ -31,7 +31,6 @@ def find_closure_tools(ctx, path='.'):
     find_tool('closure/bin/build', 'CLOSURE_SCRIPTS', path=ctx.root.find_node(ctx.env.CLOSURE_LIBRARY))
     find_tool('closurebuilder.py', 'CLOSURE_BUILDER', path=ctx.root.find_node(ctx.env.CLOSURE_SCRIPTS))
 
-    sys.path.append(ctx.env.CLOSURE_SCRIPTS)
 
 def configure(ctx):
     ctx.load('python')
@@ -44,6 +43,8 @@ class closure_compiler_task(Task.Task):
 
     def __init__(self, namespaces, roots, target, inputs=None, source_map=None, source_map_url=None, compile_type=None, compiler_flags=[], *k, **kw):
         Task.Task.__init__(self, *k, **kw)
+
+        sys.path.append(self.env.CLOSURE_SCRIPTS)
 
         self.treescan = __import__('treescan')
         self.depstree = __import__('depstree')
