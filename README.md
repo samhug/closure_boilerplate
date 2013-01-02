@@ -1,4 +1,4 @@
-[Google Closure/AppEngine Boilerplate](http://git-server/closure_boilerplate)
+[Google Closure/AppEngine Boilerplate](https://github.com/samuelhug/closure_boilerplate)
 ========================
 <br>
 
