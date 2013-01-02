@@ -19,6 +19,7 @@ def options(ctx):
     ctx.load('google_closure', tooldir=TOOLDIR);
     ctx.load('htmlcompressor', tooldir=TOOLDIR);
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
+    ctx.load('daemon', tooldir=TOOLDIR);
 
     ctx.add_option('--mode', action='store', default='development',
             help='Build environment (production, development)')
@@ -28,6 +29,7 @@ def configure(ctx):
     ctx.load('google_closure', tooldir=TOOLDIR);
     ctx.load('htmlcompressor', tooldir=TOOLDIR);
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
+    ctx.load('daemon', tooldir=TOOLDIR);
 
     ctx.find_closure_tools(path='src/client/tools')
     ctx.find_htmlcompressor(path='src/client/tools')
@@ -41,6 +43,7 @@ def build(ctx):
     ctx.load('google_closure', tooldir=TOOLDIR);
     ctx.load('htmlcompressor', tooldir=TOOLDIR);
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
+    ctx.load('daemon', tooldir=TOOLDIR);
 
     print('Building project in \'{0}\' mode.'.format(ctx.options.mode))
 

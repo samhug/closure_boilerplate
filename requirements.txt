@@ -3,3 +3,6 @@
 # for htmlcssrenamer.py
 lxml
 html5lib
+
+# for build daemon
+pyinotify
