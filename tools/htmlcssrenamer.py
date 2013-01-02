@@ -29,6 +29,7 @@ class HtmlCssRenamer(object):
                         new_classes.append(n_c)
                     else:
                         new_classes.append(c)
+                        print('Warning: Verbose CSS Class "{0}"'.format(c))
 
                 e.set('class', ' '.join(new_classes))
 

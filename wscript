@@ -81,7 +81,7 @@ def build(ctx):
     params = {
         }
 
-    stylesheets_dir = client_dir.find_or_declare('gss')
+    stylesheets_dir = client_dir.find_or_declare('stylesheets')
     target_dir = client_dir.find_or_declare('www/css')
 
     if ctx.options.mode == 'development':
@@ -89,12 +89,20 @@ def build(ctx):
     elif ctx.options.mode == 'production':
         params['renaming_map'] = css_renaming_map
 
+
+    '''
     for node in stylesheets_dir.ant_glob('**/*.gss'):
         ctx.closure_stylesheets(
-                stylesheet=node,
+                inputs=node,
                 target=target_dir.find_or_declare(node.path_from(stylesheets_dir)).change_ext('.css'),
                 **params
         )
+    '''
+    ctx.closure_stylesheets(
+            inputs=stylesheets_dir.ant_glob(['normalize.css', 'global.gss', 'main.gss']),
+            target=target_dir.find_or_declare('main.css'),
+            **params
+    )
 
     ## Closure Templates
     source = itertools.chain.from_iterable([root.ant_glob('**/*.soy') for root in roots])

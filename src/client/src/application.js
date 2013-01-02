@@ -1,6 +1,7 @@
 goog.provide('__bootstrap');
 goog.provide('closure_boilerplate.Application');
 
+goog.require('closure_boilerplate.ServiceProvider');
 goog.require('closure_boilerplate.urls');
 
 goog.require('goog.dom');
@@ -9,7 +10,6 @@ goog.require('goog.structs.Map');
 
 goog.require('relief.auth.PublicAuthManager');
 goog.require('relief.cache.Cache');
-goog.require('relief.handlers.CommonServiceProvider');
 goog.require('relief.nav.NavManager');
 goog.require('relief.rpc.RPCService');
 goog.require('relief.utils');
@@ -23,14 +23,16 @@ goog.require('relief.utils');
  */
 closure_boilerplate.Application = function() {
 
+  var eventBus = new goog.events.EventTarget();
 
+  var cache;
   /**
    * The application's cache.
    *
    * @type {relief.cache.Cache}
    * @private
    */
-  this.cache_ = new relief.cache.Cache();
+  this.cache_ = cache = new relief.cache.Cache();
 
   /**
    * Headers to be used for all RPC requests.
@@ -39,6 +41,7 @@ closure_boilerplate.Application = function() {
     'Content-Type': 'application/json'
   });
 
+  var rpc;
   /**
    * The app's RPC Service, which is given our Cache instance and the
    * headers map.
@@ -46,33 +49,40 @@ closure_boilerplate.Application = function() {
    * @type {relief.rpc.RPCService}
    * @private
    */
-  this.rpc_ = new relief.rpc.RPCService(this.cache_, headers);
+  this.rpc_ = rpc = new relief.rpc.RPCService(cache, headers);
 
+  var auth;
   /**
    * Basic dummy authentication manager.
    *
    * @type {relief.auth.PublicAuthManager}
    * @private
    */
-  this.auth_ = new relief.auth.PublicAuthManager();
+  this.auth_ = auth = new relief.auth.PublicAuthManager();
+  auth.setParentEventTarget(eventBus);
 
   // Get our required DOM elements...
   var iframe = /** @type {!HTMLIFrameElement} */
-               (goog.dom.getElement('history_frame')),
+               (goog.dom.getElementByClass(goog.getCssName('history_frame'))),
       input = /** @type {!HTMLInputElement} */
-              (goog.dom.getElement('history_input')),
-      content = /** @type {!Element} */ (goog.dom.getElement('content-root'));
+              (goog.dom.getElementByClass(goog.getCssName('history_input'))),
+      content = /** @type {!Element} */
+                (goog.dom.getElementByClass(goog.getCssName('content_root')));
 
 
-  var sp = new relief.handlers.CommonServiceProvider(closure_boilerplate.urls,
-                                    this.cache_, this.rpc_, this.auth_,
+  var sp = new closure_boilerplate.ServiceProvider(eventBus,
+                                    closure_boilerplate.urls,
+                                    cache, rpc, auth,
                                     iframe, input, content);
 
+  var nav;
   /**
    * @type {relief.nav.NavManager}
    * @private
    */
-  var nav_ = new relief.nav.NavManager(sp);
+  this.nav_ = nav = new relief.nav.NavManager(sp);
+  nav.setParentEventTarget(eventBus);
+
 };
 
 

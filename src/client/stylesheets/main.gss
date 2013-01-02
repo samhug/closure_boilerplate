@@ -1,23 +1,17 @@
 @def BG_COLOR              rgb(254, 254, 254);
 @def FG_COLOR              rgb(255, 255, 255);
 
-* { box-sizing: border-box; -moz-box-sizing: border-box }
 
 html {
-    height: 100%;
     background-color: BG_COLOR;
 }
 
 body {
     padding-top: 40px;
     padding-bottom: 40px;
-
-    min-height: 100%;
-    margin: 0;
-    font: 1em/1.4 sans-serif;
-    overflow-y: scroll;
-    background-attachment: fixed;
 }
+
+
 
 .welcome_pane {
     max-width: 300px;
@@ -38,3 +32,21 @@ body {
 .welcome_pane .heading {
     margin-bottom: 10px;
 }
+
+
+
+/**
+ * ============================================================================
+ * AJAX History
+ * ============================================================================
+ */
+
+.history_frame {
+    width: 0;
+    height: 0;
+    border: none;
+}
+
+/*.history_input {
+    width: 0;
+}*/

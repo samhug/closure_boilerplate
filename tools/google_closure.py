@@ -180,14 +180,14 @@ class closure_stylesheets_task(Task.Task):
 
     vars = ['JAVA', 'CLOSURE_STYLESHEETS_JAR']
 
-    def __init__(self, stylesheet, target, renaming_map=None, pretty=None, *k, **kw):
+    def __init__(self, inputs, target, renaming_map=None, pretty=None, *k, **kw):
         Task.Task.__init__(self, *k, **kw)
 
 
         self.renaming_map = renaming_map
         self.pretty = pretty
 
-        self.set_inputs(stylesheet)
+        self.set_inputs(inputs)
         self.set_outputs(target)
         if self.renaming_map:
             self.set_outputs(self.renaming_map)
@@ -209,7 +209,7 @@ class closure_stylesheets_task(Task.Task):
             ]
 
 
-        command += [self.inputs[0].abspath()]
+        command += [n.abspath() for n in self.inputs]
 
         return self.bld.exec_command(command)
 
