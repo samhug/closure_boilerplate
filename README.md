@@ -2,7 +2,11 @@
 ========================
 <br>
 
-### Project Description
+[Demo Page](http://closure-boilerplate.appspot.com)
+
+<br>
+
+### Description
     The project provides boilerplate code and a build system to accelerate development of large scale web applications.
 
 ### Instructions
