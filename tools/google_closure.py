@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 import os, sys
-from waflib import Task, TaskGen
+from waflib import *
 from waflib.Configure import conf
 
 def options(ctx):
@@ -167,7 +167,6 @@ def fixjsstyle(self):
 
     return self.bld.exec_command(command)
 
-from waflib import TaskGen
 TaskGen.declare_chain(name='template',
         rule='${JAVA} -jar ${CLOSURE_TEMPLATES_JAR} \
                 --shouldProvideRequireSoyNamespaces \
@@ -188,8 +187,10 @@ class closure_stylesheets_task(Task.Task):
         self.renaming_map = renaming_map
         self.pretty = pretty
 
-        self.set_inputs([stylesheet])
-        self.set_outputs([target])
+        self.set_inputs(stylesheet)
+        self.set_outputs(target)
+        if self.renaming_map:
+            self.set_outputs(self.renaming_map)
 
     def run(self):
         command = [self.env.JAVA, '-jar',
