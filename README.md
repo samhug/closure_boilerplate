@@ -18,8 +18,8 @@
             In Ubuntu this can be achieved by running:
         `sudo apt-get install python-dev libxml2-dev libxslt1-dev`
 
-- Execute the following command to setup the environment:
-    `$ ./bootstrap.sh`
+- Execute the following command to install the python dependancies:
+    `$ pip install -r requirements.txt`
 
 - Building:
     `$ ./waf configure build`
