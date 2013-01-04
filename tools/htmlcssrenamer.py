@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-import json, html5lib, lxml.html
+import json
+
 from waflib import *
 from waflib.Configure import conf
 
@@ -15,6 +16,8 @@ class HtmlCssRenamer(object):
         return buf.split()
 
     def process(self):
+        import html5lib, lxml.html
+
         doc = html5lib.parse(self.input_html, treebuilder='lxml', namespaceHTMLElements=False)
 
         for e in doc.iter():
@@ -80,7 +83,10 @@ def options(ctx):
     pass
 
 def configure(ctx):
-    pass
+    ctx.load('python')
+
+    ctx.check_python_module('html5lib')
+    ctx.check_python_module('lxml.html')
 
 class htmlcssrenamer_task(Task.Task):
 
