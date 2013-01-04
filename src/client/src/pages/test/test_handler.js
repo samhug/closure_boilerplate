@@ -1,4 +1,4 @@
-goog.provide('closure_boilerplate.handlers.TestHandler');
+goog.provide('closure_boilerplate.pages.test.TestHandler');
 
 goog.require('relief.nav.Handler');
 
@@ -12,7 +12,7 @@ goog.require('relief.nav.Handler');
  * @constructor
  * @implements {relief.nav.Handler}
  */
-closure_boilerplate.handlers.TestHandler = function(sp) {
+closure_boilerplate.pages.test.TestHandler = function(sp) {
   /**
    * Store the Service Provider for later.
    *
@@ -31,7 +31,7 @@ closure_boilerplate.handlers.TestHandler = function(sp) {
  * @param {relief.nav.Path} path An object with request-specific parameters.
  * @override
  */
-closure_boilerplate.handlers.TestHandler.prototype.handle = function(path) {
+closure_boilerplate.pages.test.TestHandler.prototype.handle = function(path) {
   this.sp_.getContentRoot().innerHTML = 'Howdy';
 };
 
@@ -51,7 +51,7 @@ closure_boilerplate.handlers.TestHandler.prototype.handle = function(path) {
  *    not to navigate away (called with "false").
  * @override
  */
-closure_boilerplate.handlers.TestHandler.prototype.transition =
+closure_boilerplate.pages.test.TestHandler.prototype.transition =
     function(path, onTransition) {
   this.handle(path);
   onTransition(true);
@@ -71,7 +71,7 @@ closure_boilerplate.handlers.TestHandler.prototype.transition =
  *    must exit immediately.
  * @override
  */
-closure_boilerplate.handlers.TestHandler.prototype.exit =
+closure_boilerplate.pages.test.TestHandler.prototype.exit =
     function(onExit, opt_force) {
   this.sp_.getContentRoot().innerHTML = '';
   onExit(true);
@@ -81,7 +81,7 @@ closure_boilerplate.handlers.TestHandler.prototype.exit =
 /**
  * @inheritDoc
  */
-closure_boilerplate.handlers.TestHandler.prototype.dispose = function() {
+closure_boilerplate.pages.test.TestHandler.prototype.dispose = function() {
   this.sp_ = null;
 };
 
@@ -89,6 +89,6 @@ closure_boilerplate.handlers.TestHandler.prototype.dispose = function() {
 /**
  * @inheritDoc
  */
-closure_boilerplate.handlers.TestHandler.prototype.isDisposed = function() {
+closure_boilerplate.pages.test.TestHandler.prototype.isDisposed = function() {
   return this.sp_ === null;
 };

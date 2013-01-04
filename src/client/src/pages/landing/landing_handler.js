@@ -1,6 +1,7 @@
-goog.provide('closure_boilerplate.handlers.LandingHandler');
+goog.provide('closure_boilerplate.pages.landing.LandingHandler');
 
-goog.require('closure_boilerplate.templates');
+goog.require('closure_boilerplate.pages.landing.templates');
+
 goog.require('relief.nav.Handler');
 
 goog.require('soy');
@@ -15,7 +16,7 @@ goog.require('soy');
  * @constructor
  * @implements {relief.nav.Handler}
  */
-closure_boilerplate.handlers.LandingHandler = function(sp) {
+closure_boilerplate.pages.landing.LandingHandler = function(sp) {
 
   /**
    * Store the Service Provider for later.
@@ -37,10 +38,11 @@ closure_boilerplate.handlers.LandingHandler = function(sp) {
  * @param {relief.nav.Path} path An object with request-specific parameters.
  * @override
  */
-closure_boilerplate.handlers.LandingHandler.prototype.handle = function(path) {
+closure_boilerplate.pages.landing.LandingHandler.prototype.handle =
+    function(path) {
   if (this.content == null) {
     this.content = soy.renderAsFragment(
-        closure_boilerplate.templates.landingPage);
+        closure_boilerplate.pages.landing.templates.landingPage);
   }
 
   this.sp_.getContentRoot().appendChild(this.content);
@@ -62,7 +64,7 @@ closure_boilerplate.handlers.LandingHandler.prototype.handle = function(path) {
  *    not to navigate away (called with "false").
  * @override
  */
-closure_boilerplate.handlers.LandingHandler.prototype.transition =
+closure_boilerplate.pages.landing.LandingHandler.prototype.transition =
     function(path, onTransition) {
   this.handle(path);
   onTransition(true);
@@ -82,7 +84,7 @@ closure_boilerplate.handlers.LandingHandler.prototype.transition =
  *    must exit immediately.
  * @override
  */
-closure_boilerplate.handlers.LandingHandler.prototype.exit =
+closure_boilerplate.pages.landing.LandingHandler.prototype.exit =
     function(onExit, opt_force) {
 
   this.sp_.getContentRoot().removeChild(this.content);
@@ -93,7 +95,8 @@ closure_boilerplate.handlers.LandingHandler.prototype.exit =
 /**
  * @inheritDoc
  */
-closure_boilerplate.handlers.LandingHandler.prototype.dispose = function() {
+closure_boilerplate.pages.landing.LandingHandler.prototype.dispose =
+    function() {
   this.sp_ = null;
 };
 
@@ -101,6 +104,7 @@ closure_boilerplate.handlers.LandingHandler.prototype.dispose = function() {
 /**
  * @inheritDoc
  */
-closure_boilerplate.handlers.LandingHandler.prototype.isDisposed = function() {
+closure_boilerplate.pages.landing.LandingHandler.prototype.isDisposed =
+    function() {
   return this.sp_ === null;
 };
