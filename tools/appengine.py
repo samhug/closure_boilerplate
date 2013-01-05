@@ -9,7 +9,7 @@ from waflib.Configure import conf
 
 def options(ctx):
 
-    ctx.add_option('--port', action='store', default='8080',
+    ctx.add_option('--port', action='store',
             help='Port for local development server')
 
 @conf
@@ -79,11 +79,17 @@ def serve(ctx):
     if not app_node:
         ctx.fatal('Unable to locate application directory at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
-    options = ['--use_sqlite', '--port', ctx.options.port]
+    options = ['--use_sqlite']
+    if not ctx.options.port is None:
+        options += ['--port', str(ctx.options.port)]
+
+    server = ctx.env.APPENGINE_DEV_APPSERVER
+    if isinstance(server, list):
+        server = server[1]
 
     serve_cmd = "{python} {server} {options} {project}".format(
             python  = ctx.env.PYTHON[0],
-            server  = ctx.env.APPENGINE_DEV_APPSERVER,
+            server  = server,
             project = app_node.get_bld().abspath(),
             options = ' '.join(options),
         )
@@ -105,9 +111,13 @@ def deploy(ctx):
     if not app_dir:
         ctx.fatal('Unable to locate application at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
+    script = ctx.env.APPENGINE_APPCFG
+    if isinstance(script, list):
+        script = script[1]
+
     cmd = "{python} {script} {options} update {project}".format(
             python  = ctx.env.PYTHON[0],
-            script  = ctx.env.APPENGINE_APPCFG,
+            script  = script,
             project = app_dir.get_bld().abspath(),
             options = ' '.join([
                 '--oauth2',
