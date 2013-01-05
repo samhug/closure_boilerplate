@@ -26,13 +26,19 @@ class HtmlCssRenamer(object):
                 class_list = self._parse_class_list(c_list_str)
 
                 new_classes = []
-                for c in class_list:
-                    n_c = self.renaming_map.get(c)
-                    if n_c:
-                        new_classes.append(n_c)
-                    else:
-                        new_classes.append(c)
-                        print('Warning: Verbose CSS Class "{0}"'.format(c))
+                for css_class in class_list:
+
+                    n_parts = []
+
+                    for part in css_class.split('-'):
+                        n_part = self.renaming_map.get(part)
+                        if n_part:
+                            n_parts.append(n_part)
+                        else:
+                            n_parts.append(part)
+                            print('Warning: Verbose CSS class part "{0}"'.format(part))
+
+                    new_classes.append('-'.join(n_parts))
 
                 e.set('class', ' '.join(new_classes))
 
