@@ -40,7 +40,7 @@ closure_boilerplate.pages.landing.LandingHandler = function(sp) {
  */
 closure_boilerplate.pages.landing.LandingHandler.prototype.handle =
     function(path) {
-  if (this.content == null) {
+  if (this.content === null) {
     this.content = soy.renderAsFragment(
         closure_boilerplate.pages.landing.templates.landingPage);
   }

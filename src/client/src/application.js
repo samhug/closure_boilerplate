@@ -6,6 +6,8 @@ goog.require('closure_boilerplate.ServiceProvider');
 goog.require('closure_boilerplate.analytics.initialize');
 goog.require('closure_boilerplate.analytics.queue');
 
+goog.require('closure_boilerplate.navbar.Navbar');
+
 goog.require('closure_boilerplate.urls');
 
 goog.require('goog.dom');
@@ -86,6 +88,11 @@ closure_boilerplate.Application = function() {
    */
   this.nav_ = nav = new relief.nav.NavManager(sp);
   nav.setParentEventTarget(eventBus);
+
+  /**
+   * @private
+   */
+  this.menu_ = new closure_boilerplate.navbar.Navbar();
 
   /**
    * @private
