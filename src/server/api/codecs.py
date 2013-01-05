@@ -4,6 +4,8 @@ from messages import BaseAPIMessage
 
 class BaseCodec(object):
 
+    mime_type = 'text/plain'
+
     def encode(self, o):
         pass
 
@@ -11,6 +13,8 @@ class BaseCodec(object):
         pass
 
 class JSONCodec(BaseCodec):
+
+    mime_type = 'application/json'
 
     class JSONEncoder(json.JSONEncoder):
         def default(self, o):
