@@ -1,5 +1,8 @@
 # Project requirements file for pip - http://www.pip-installer.org/
 
+## Google Closure Linter
+http://closure-linter.googlecode.com/files/closure_linter-latest.tar.gz
+
 # for htmlcssrenamer.py
 lxml
 html5lib
