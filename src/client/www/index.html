@@ -14,23 +14,20 @@
 <body onload="__bootstrap()">
 
     <!-- Navigation Bar -->
-    <div class="navbar-wrapper">
-        <div class="container">
-            <div class="navbar">
-                <div class="navbar-inner">
-                    <a class="brand" href="#">Closure Boilerplate</a>
-
-                    <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><a href="#">About</a></li>
-                    </ul>
-                </div>
-            </div>
+    <div role=header class="site-header stretcher">
+        <h1 class="site-title"><a href="#">Closure Boilerplate</a></h1>
+        <button class="menu-toggle">▼</button>
+        <div role=nav class="site-nav cf">
+            <ul class="hor">
+                <li><a href="#/test">Test</a></li>
+                <li><a href="#">Portfolio</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
         </div>
     </div>
 
     <!-- Container for the primary page content -->
-    <div class="content_root container"></div>
+    <div role="main" class="content_root stretcher"></div>
 
     <!-- Elements for AJAX history support -->
     <form><input type="hidden" class="history_input" /></form>
