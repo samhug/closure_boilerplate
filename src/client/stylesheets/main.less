@@ -1,9 +1,9 @@
-@def BG_COLOR              rgb(254, 254, 254);
-@def FG_COLOR              rgb(255, 255, 255);
+@BG_COLOR: rgb(254, 254, 254);
+@FG_COLOR: rgb(255, 255, 255);
 
 
 html {
-    background-color: BG_COLOR;
+    background-color: @BG_COLOR;
 }
 
 body {
@@ -17,7 +17,7 @@ body {
     max-width: 300px;
     padding: 19px 29px 29px;
     margin: 0 auto 20px;
-    background-color: FG_COLOR;
+    background-color: @FG_COLOR;
     border: 1px solid #e5e5e5;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -32,8 +32,6 @@ body {
 .welcome_pane .heading {
     margin-bottom: 10px;
 }
-
-
 
 /**
  * ============================================================================

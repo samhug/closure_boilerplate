@@ -20,6 +20,7 @@ def options(ctx):
     ctx.load('htmlcompressor', tooldir=TOOLDIR);
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
     ctx.load('daemon', tooldir=TOOLDIR);
+    ctx.load('less', tooldir=TOOLDIR);
 
     ctx.add_option('--mode', action='store', default='development',
             help='Build environment (production, development)')
@@ -30,6 +31,7 @@ def configure(ctx):
     ctx.load('htmlcompressor', tooldir=TOOLDIR);
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
     ctx.load('daemon', tooldir=TOOLDIR);
+    ctx.load('less', tooldir=TOOLDIR);
 
     ctx.find_closure_tools(path='src/client/tools')
     ctx.find_htmlcompressor(path='src/client/tools')
@@ -44,6 +46,7 @@ def build(ctx):
     ctx.load('htmlcompressor', tooldir=TOOLDIR);
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
     ctx.load('daemon', tooldir=TOOLDIR);
+    ctx.load('less', tooldir=TOOLDIR);
 
     print('Building project in \'{0}\' mode.'.format(ctx.options.mode))
 
@@ -80,36 +83,48 @@ def build(ctx):
 
     css_renaming_map = client_dir.find_or_declare('src/renaming_map.js')
 
-    ## Closure Stylesheets
-    params = {
-        }
 
-    stylesheets_dir = client_dir.find_or_declare('stylesheets')
+
+    ###########################################################################
+    ## Stylesheets
+    ###########################################################################
+
+    stylesheets_dir = client_dir.find_node('stylesheets')
     target_dir = client_dir.find_or_declare('www/css')
+
+    compiled_less = []
+
+    ## LESS
+    for node in stylesheets_dir.ant_glob('**/*.less'):
+        target_node = node.get_bld().change_ext('.css')
+        compiled_less.append(target_node)
+        ctx(features='less', source=node, target=target_node)
+
+    ## Closure Stylesheets
+    params = {}
 
     if ctx.options.mode == 'development':
         params['pretty'] = True
     elif ctx.options.mode == 'production':
         params['renaming_map'] = css_renaming_map
 
-
-    '''
-    for node in stylesheets_dir.ant_glob('**/*.gss'):
-        ctx.closure_stylesheets(
-                inputs=node,
-                target=target_dir.find_or_declare(node.path_from(stylesheets_dir)).change_ext('.css'),
-                **params
-        )
-    '''
     ctx.closure_stylesheets(
-            inputs=stylesheets_dir.ant_glob(['normalize.css', 'global.gss', 'main.gss']),
+            inputs=compiled_less + stylesheets_dir.ant_glob('**/*.css'),
             target=target_dir.find_or_declare('main.css'),
             **params
     )
 
-    ## Closure Templates
+    ###########################################################################
+    ## Templates
+    ###########################################################################
+
     source = itertools.chain.from_iterable([root.ant_glob('**/*.soy') for root in roots])
     ctx(source=source)
+
+
+    ###########################################################################
+    ## Javascript
+    ###########################################################################
 
     ## Closure Compiler
 
