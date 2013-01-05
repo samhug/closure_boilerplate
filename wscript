@@ -112,20 +112,19 @@ def build(ctx):
     ctx(source=source)
 
     ## Closure Compiler
+
+    # Config script
     params = {
             'inputs': [],
+            'compiler_flags': [],
         }
 
-    # Google analytics script
-    ga_script = client_dir.find_node('src/google_analytics.js')
-
     if ctx.options.mode == 'development':
-        #params['source_map'] = client_dir.find_or_declare('www/js/source_map.js')
-        #params['source_map_url'] = '/js/source_map.js'
         params['compile_type'] = 'simple'
+        params['compiler_flags'].append('--define=\'DEBUG=true\'')
     elif ctx.options.mode == 'production':
         params['compile_type'] = 'advanced'
-        params['inputs'].append(ga_script)
+        params['compiler_flags'].append('--define=\'DEBUG=false\'')
         params['inputs'].append(css_renaming_map)
 
     ctx.closure_compiler(

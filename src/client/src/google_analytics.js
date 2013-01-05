@@ -1,32 +1,29 @@
-goog.provide('_gaq');
+goog.provide('closure_boilerplate.analytics.initialize');
+goog.provide('closure_boilerplate.analytics.queue');
+
+goog.require('closure_boilerplate.config');
 
 
 /**
- * @const
- * @type {string}
+ * Google Analytics queue
+ * @type {Array}
  */
-var GOOGLE_ANALYTICS_ID = 'UA-37051344-1';
+closure_boilerplate.analytics.queue = [
+  ['_setAccount', closure_boilerplate.config.GOOGLE_ANALYTICS_ID],
+  ['_trackPageview']
+];
+goog.exportSymbol('_gaq', closure_boilerplate.analytics.queue);
 
 
 /**
- * Google Analytics Queue
- *
- * @expose
+ * Initialize Google Analytics tracking.
  */
-var _gaq = _gaq || [];
-
-_gaq.push(['_setAccount', GOOGLE_ANALYTICS_ID]);
-_gaq.push(['_trackPageview']);
-
-(function() {
+closure_boilerplate.analytics.initialize = function() {
   var ga = document.createElement('script');
-  ga.type = 'text/javascript';
   ga.async = true;
-  ga.src = ('https:' == document.location.protocol ?
-      'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  ga.src = ('https:' == document.location.protocol ? '//ssl' : '//www') +
+          '.google-analytics.com/ga.js';
 
   var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(ga, s);
-})();
-
-goog.exportSymbol('_gaq', _gaq);
+};

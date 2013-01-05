@@ -2,6 +2,10 @@ goog.provide('__bootstrap');
 goog.provide('closure_boilerplate.Application');
 
 goog.require('closure_boilerplate.ServiceProvider');
+
+goog.require('closure_boilerplate.analytics.initialize');
+goog.require('closure_boilerplate.analytics.queue');
+
 goog.require('closure_boilerplate.urls');
 
 goog.require('goog.dom');
@@ -83,6 +87,18 @@ closure_boilerplate.Application = function() {
   this.nav_ = nav = new relief.nav.NavManager(sp);
   nav.setParentEventTarget(eventBus);
 
+  /**
+   * @private
+   */
+  this.analytics_queue_ = closure_boilerplate.analytics.queue;
+
+
+  /**
+   * Initialize google analytics tracking when in production mode.
+   */
+  if (ENABLE_ANALYTICS) {
+    closure_boilerplate.analytics.initialize();
+  }
 };
 
 
@@ -92,7 +108,6 @@ closure_boilerplate.Application = function() {
 closure_boilerplate.start = function() {
   new closure_boilerplate.Application();
 };
-
 
 // Export the __bootstrap symbol so we have a way of starting the application.
 goog.exportSymbol('__bootstrap', closure_boilerplate.start);

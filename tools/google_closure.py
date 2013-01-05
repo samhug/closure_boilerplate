@@ -97,7 +97,7 @@ class closure_compiler_task(Task.Task):
                     self.compiler_flags)
 
         if compiled_source is None:
-            self.fatal('JavaScript compilation failed.')
+            self.bld.fatal('JavaScript compilation failed.')
 
         if not self.source_map_url is None:
             compiled_source = '//@ sourceMappingURL='+self.source_map_url+'\n'+compiled_source
