@@ -15,7 +15,10 @@ class copy_file(Task.Task):
     def run(self):
         target_dir = self.outputs[0].parent.abspath()
         if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
+            try:
+                os.makedirs(target_dir)
+            except OSError:
+                pass
 
         shutil.copy(self.inputs[0].abspath(), self.outputs[0].abspath())
         return 0
