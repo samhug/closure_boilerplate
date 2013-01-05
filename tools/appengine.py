@@ -72,6 +72,9 @@ def build(ctx):
     ctx.copy(yaml)
 
 
+def shellquote(s):
+    return "'" + s.replace("'", "'\\''") + "'"
+
 def serve(ctx):
     print('Starting Development Server...')
 
@@ -84,9 +87,9 @@ def serve(ctx):
         options += ['--port', str(ctx.options.port)]
 
     serve_cmd = "{python} {server} {options} {project}".format(
-            python  = ctx.env.PYTHON[0],
-            server  = ctx.env.APPENGINE_DEV_APPSERVER,
-            project = app_node.get_bld().abspath(),
+            python  = shellquote(ctx.env.PYTHON[0]),
+            server  = shellquote(ctx.env.APPENGINE_DEV_APPSERVER),
+            project = shellquote(app_node.get_bld().abspath()),
             options = ' '.join(options),
         )
 
@@ -108,9 +111,9 @@ def deploy(ctx):
         ctx.fatal('Unable to locate application at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
     cmd = "{python} {script} {options} update {project}".format(
-            python  = ctx.env.PYTHON[0],
-            script  = ctx.env.APPENGINE_APPCFG,
-            project = app_dir.get_bld().abspath(),
+            python  = shellquote(ctx.env.PYTHON[0]),
+            script  = shellquote(ctx.env.APPENGINE_APPCFG),
+            project = shellquote(app_dir.get_bld().abspath()),
             options = ' '.join([
                 '--oauth2',
                 '--no_cookies',
