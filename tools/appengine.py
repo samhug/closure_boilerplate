@@ -8,7 +8,9 @@ import os
 from waflib.Configure import conf
 
 def options(ctx):
-    pass
+
+    ctx.add_option('--port', action='store', default='8080',
+            help='Port for local development server')
 
 @conf
 def find_appengine_sdk(ctx, path=None):
@@ -48,13 +50,13 @@ def serve(ctx):
     if not app_node:
         ctx.fatal('Unable to locate application directory at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
+    options = ['--use_sqlite', '--port', ctx.options.port]
+
     serve_cmd = "{python} {server} {options} {project}".format(
             python  = ctx.env.PYTHON[0],
             server  = ctx.env.APPENGINE_DEV_APPSERVER,
             project = app_node.get_bld().abspath(),
-            options = ' '.join([
-                '--use_sqlite',
-                ]),
+            options = ' '.join(options),
         )
 
     proc = Popen(serve_cmd, shell=True)
