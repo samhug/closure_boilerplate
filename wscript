@@ -9,10 +9,12 @@ out = 'build'
 
 TOOLDIR = './tools'
 
-import os
+import os, sys
 import itertools
 
 from waflib import *
+
+sys.path.append(TOOLDIR)
 
 def options(ctx):
     ctx.load('appengine', tooldir=TOOLDIR);
@@ -32,6 +34,7 @@ def configure(ctx):
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
     ctx.load('daemon', tooldir=TOOLDIR);
     ctx.load('less', tooldir=TOOLDIR);
+    ctx.load('utils', tooldir=TOOLDIR);
 
     ctx.find_closure_tools(path='src/client/tools')
     ctx.find_htmlcompressor(path='src/client/tools')
@@ -171,11 +174,11 @@ def build(ctx):
 
     # Copy the www directory
     for node in client_dir.ant_glob('www/**/*'):
-        ctx(rule='cp ${SRC} ${TGT}', source=node, target=node.get_bld())
+        ctx.copy(node)
 
     # Copy server scripts to the build directory
     for node in server_dir.ant_glob('**/*.py'):
-        ctx(rule='cp ${SRC} ${TGT}', source=node, target=node.get_bld())
+        ctx.copy(node)
 
 def fixjsstyle(ctx):
     ctx(features='fixjsstyle', roots=[ctx.path.find_dir('src/client/src')])

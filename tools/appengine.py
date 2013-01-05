@@ -60,6 +60,7 @@ def find_appengine_app(ctx, path='.'):
 
 def configure(ctx):
     ctx.load('python')
+    ctx.load('utils')
     ctx.check_python_version(minver=(2,7,0))
 
 
@@ -68,7 +69,7 @@ def build(ctx):
     yaml = ctx.root.find_node(ctx.env.APPENGINE_APP_YAML)
     if not yaml:
         ctx.fatal('Unable to locate YAML file at ({0})'.format(ctx.env.APPENGINE_APP_YAML))
-    ctx(rule='cp ${SRC} ${TGT}', source=yaml, target=yaml.get_bld())
+    ctx.copy(yaml)
 
 
 def serve(ctx):
