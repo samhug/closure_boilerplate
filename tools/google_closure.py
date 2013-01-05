@@ -40,6 +40,7 @@ def configure(ctx):
 class closure_compiler_task(Task.Task):
 
     vars = ['PYTHON', 'CLOSURE_BUILDER', 'CLOSURE_LIBRARY', 'CLOSURE_COMPILER']
+    color = 'CYAN'
 
     def __init__(self, namespaces, roots, target, inputs=None, source_map=None, source_map_url=None, compile_type=None, compiler_flags=[], *k, **kw):
         Task.Task.__init__(self, *k, **kw)
@@ -180,6 +181,7 @@ TaskGen.declare_chain(name='template',
 class closure_stylesheets_task(Task.Task):
 
     vars = ['JAVA', 'CLOSURE_STYLESHEETS_JAR']
+    color = 'PINK'
 
     def __init__(self, inputs, target, renaming_map=None, pretty=None, *k, **kw):
         Task.Task.__init__(self, *k, **kw)
