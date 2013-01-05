@@ -1,5 +1,6 @@
 *.py[cod]
 
+waf-*
 .waf-*
 .lock-*
 
