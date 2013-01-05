@@ -3,7 +3,7 @@
 
 from subprocess import Popen
 from waflib import *
-import os
+import os, sys
 
 from waflib.Configure import conf
 
@@ -13,9 +13,37 @@ def options(ctx):
             help='Port for local development server')
 
 @conf
-def find_appengine_sdk(ctx, path=None):
-    ctx.find_program('dev_appserver.py', path_list=path, var='APPENGINE_DEV_APPSERVER')
-    ctx.find_program('appcfg.py', path_list=path, var='APPENGINE_APPCFG')
+def find_python_program(self, filename, **kwargs):
+    """
+    Search for a python program on the operating system
+
+    :param filename: file to search for
+    :type filename: string
+    :param path_list: list of paths to look into
+    :type path_list: list of string
+    :param var: store the results into *conf.env.var*
+    :type var: string
+    :param environ: operating system environment to pass to :py:func:`waflib.Configure.find_program`
+    :type environ: dict
+    :param exts: extensions given to :py:func:`waflib.Configure.find_program`
+    :type exts: list
+    """
+
+    try:
+        app = self.find_program(filename, **kwargs)
+    except Exception:
+        self.find_program('python', var='PYTHON_BIN')
+        app = self.find_file(filename, os.environ['PATH'].split(os.pathsep))
+        if not app:
+            raise
+        if kwargs.get('var', None):
+            self.env[kwargs.get('var')] = Utils.to_list(self.env['PYTHON_BIN']) + [app]
+        self.msg('Checking for %r' % filename, app)
+
+@conf
+def find_appengine_sdk(ctx, path_list=[]):
+    ctx.find_python_program('dev_appserver.py', path_list=path_list, var='APPENGINE_DEV_APPSERVER')
+    ctx.find_python_program('appcfg.py', path_list=path_list, var='APPENGINE_APPCFG')
 
 @conf
 def find_appengine_app(ctx, path='.'):
