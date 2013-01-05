@@ -71,10 +71,6 @@ def build(ctx):
         ctx.fatal('Unable to locate YAML file at ({0})'.format(ctx.env.APPENGINE_APP_YAML))
     ctx.copy(yaml)
 
-
-def shellquote(s):
-    return "'" + s.replace("'", "'\\''") + "'"
-
 def serve(ctx):
     print('Starting Development Server...')
 
@@ -82,18 +78,16 @@ def serve(ctx):
     if not app_node:
         ctx.fatal('Unable to locate application directory at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
-    options = ['--use_sqlite']
+
+    cmd = [ctx.env.PYTHON[0], ctx.env.APPENGINE_DEV_APPSERVER,
+            app_node.get_bld().abspath(),
+            ]
+
+    cmd.append('--use_sqlite')
     if not ctx.options.port is None:
-        options += ['--port', str(ctx.options.port)]
-
-    serve_cmd = "{python} {server} {options} {project}".format(
-            python  = shellquote(ctx.env.PYTHON[0]),
-            server  = shellquote(ctx.env.APPENGINE_DEV_APPSERVER),
-            project = shellquote(app_node.get_bld().abspath()),
-            options = ' '.join(options),
-        )
-
-    proc = Popen(serve_cmd, shell=True)
+        cmd += ['--port', str(ctx.options.port)]
+    
+    proc = Popen(cmd)
 
     try:
         proc.wait()
@@ -110,17 +104,13 @@ def deploy(ctx):
     if not app_dir:
         ctx.fatal('Unable to locate application at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
-    cmd = "{python} {script} {options} update {project}".format(
-            python  = shellquote(ctx.env.PYTHON[0]),
-            script  = shellquote(ctx.env.APPENGINE_APPCFG),
-            project = shellquote(app_dir.get_bld().abspath()),
-            options = ' '.join([
-                '--oauth2',
-                '--no_cookies',
-                ]),
-        )
+    cmd = [ctx.env.PYTHON[0], ctx.env.APPENGINE_APPCFG,
+            'update', app_dir.get_bld().abspath(),
+            '--oauth2',
+            '--no_cookies',
+        ]
 
-    proc = Popen(cmd, shell=True)
+    proc = Popen(cmd)
 
     try:
         proc.wait()
