@@ -32,12 +32,12 @@ def find_python_program(self, filename, **kwargs):
     try:
         app = self.find_program(filename, **kwargs)
     except Exception:
-        self.find_program('python', var='PYTHON_BIN')
+        #self.find_program('python', var='PYTHON_BIN')
         app = self.find_file(filename, os.environ['PATH'].split(os.pathsep))
         if not app:
             raise
         if kwargs.get('var', None):
-            self.env[kwargs.get('var')] = Utils.to_list(self.env['PYTHON_BIN']) + [app]
+            self.env[kwargs.get('var')] = [app]
         self.msg('Checking for %r' % filename, app)
 
 @conf
@@ -83,13 +83,9 @@ def serve(ctx):
     if not ctx.options.port is None:
         options += ['--port', str(ctx.options.port)]
 
-    server = ctx.env.APPENGINE_DEV_APPSERVER
-    if isinstance(server, list):
-        server = server[1]
-
     serve_cmd = "{python} {server} {options} {project}".format(
             python  = ctx.env.PYTHON[0],
-            server  = server,
+            server  = ctx.env.APPENGINE_DEV_APPSERVER,
             project = app_node.get_bld().abspath(),
             options = ' '.join(options),
         )
@@ -111,13 +107,9 @@ def deploy(ctx):
     if not app_dir:
         ctx.fatal('Unable to locate application at ({0})'.format(ctx.env.APPENGINE_APP_ROOT))
 
-    script = ctx.env.APPENGINE_APPCFG
-    if isinstance(script, list):
-        script = script[1]
-
     cmd = "{python} {script} {options} update {project}".format(
             python  = ctx.env.PYTHON[0],
-            script  = script,
+            script  = ctx.env.APPENGINE_APPCFG,
             project = app_dir.get_bld().abspath(),
             options = ' '.join([
                 '--oauth2',
