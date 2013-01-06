@@ -34,13 +34,13 @@ body {
 
 	/* Logo / Project title */
 	h1 {
-		display: inline-block;
+		float: left;
 		margin: 0;
-		padding: 0 @header-height / 2;
 		white-space: nowrap;
 
 		a {
 			display: inline-block;
+			padding: 0 @header-height / 2;
 			font-size: 24px;
 			line-height: @header-height;
 			text-decoration: inherit;
@@ -67,6 +67,7 @@ body {
 
 	/* Navigation */
 	.site-nav {
+		clear: left;
 		height: 0;
 		overflow: hidden;
 		.transition();
@@ -77,8 +78,10 @@ body {
 		}
 
 		li {
+			float: left;
+
 			@media (max-width: 959px) {
-				display: block;
+				float: none;
 
 				&:nth-child(odd) a {
 					background: #e5e5e5;
