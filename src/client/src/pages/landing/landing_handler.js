@@ -2,6 +2,8 @@ goog.provide('closure_boilerplate.pages.landing.LandingHandler');
 
 goog.require('closure_boilerplate.pages.landing.templates');
 
+goog.require('goog.dom');
+
 goog.require('relief.nav.Handler');
 
 goog.require('soy');
@@ -87,7 +89,7 @@ closure_boilerplate.pages.landing.LandingHandler.prototype.transition =
 closure_boilerplate.pages.landing.LandingHandler.prototype.exit =
     function(onExit, opt_force) {
 
-  this.sp_.getContentRoot().removeChild(this.content);
+  goog.dom.removeChildren(this.sp_.getContentRoot());
   onExit(true);
 };
 
