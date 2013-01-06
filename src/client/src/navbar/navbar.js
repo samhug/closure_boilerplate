@@ -15,13 +15,41 @@ closure_boilerplate.navbar.Navbar = function() {
   this.navBarHeight = 60 * goog.dom.getElementsByTagNameAndClass('li', null,
       this.nav).length + 'px';
 
-  this.open = false;
+  this.isOpen = false;
 
   this.menuToggleEl = goog.dom.getElementByClass(
       goog.getCssName('menu-toggle'));
 
+  this.menuItems = goog.dom.getElementsByTagNameAndClass('a', null,
+      this.headerEl);
+
+  // Add click event listener to the toggle button
   goog.events.listen(this.menuToggleEl,
-      'click', this.onMenuToggle_, true, this);
+      'click', this.onMenuToggleClicked_, true, this);
+
+  // Add click event listener to the toggle button
+  goog.array.forEach(this.menuItems, function(el) {
+    goog.events.listen(el, 'click', this.onMenuItemClicked_, true, this);
+  }, this);
+
+};
+
+
+/**
+ * Sets the state of the drop down menu. If no state is provided then it
+ * toggles the state.
+ *
+ * @param {boolean=} opt_state The state to activate.
+ */
+closure_boilerplate.navbar.Navbar.prototype.setState = function(opt_state) {
+
+  this.isOpen = opt_state != null ? opt_state : !this.isOpen;
+
+  if (this.isOpen) {
+    this.navEl.style.height = this.navBarHeight;
+  } else {
+    this.navEl.style.height = 0;
+  }
 };
 
 
@@ -30,13 +58,20 @@ closure_boilerplate.navbar.Navbar = function() {
  *
  * @private
  */
-closure_boilerplate.navbar.Navbar.prototype.onMenuToggle_ = function() {
+closure_boilerplate.navbar.Navbar.prototype.onMenuToggleClicked_ = function() {
 
-  if (this.open) {
-    this.navEl.style.height = 0;
-  } else {
-    this.navEl.style.height = this.navBarHeight;
-  }
+  // Toggle the open state of the menu.
+  this.setState();
+};
 
-  this.open = !this.open;
+
+/**
+ * Called when a menu item is clicked.
+ *
+ * @private
+ */
+closure_boilerplate.navbar.Navbar.prototype.onMenuItemClicked_ = function() {
+
+  // Close the menu
+  this.setState(false);
 };
