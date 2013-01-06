@@ -95,13 +95,10 @@ def build(ctx):
     stylesheets_dir = client_dir.find_node('stylesheets')
     target_dir = client_dir.find_or_declare('www/css')
 
-    compiled_less = []
-
     ## LESS
-    for node in stylesheets_dir.ant_glob('**/*.less'):
-        target_node = node.get_bld().change_ext('.css')
-        compiled_less.append(target_node)
-        ctx(features='less', source=node, target=target_node)
+    main_less = stylesheets_dir.find_node('main.less')
+    main_css  = main_less.get_bld().change_ext('.css')
+    ctx(features='less', source=main_less, target=main_css)
 
     ## Closure Stylesheets
     params = {}
@@ -112,7 +109,7 @@ def build(ctx):
         params['renaming_map'] = css_renaming_map
 
     ctx.closure_stylesheets(
-            inputs=compiled_less + stylesheets_dir.ant_glob('**/*.css'),
+            inputs=main_css,
             target=target_dir.find_or_declare('main.css'),
             **params
     )
