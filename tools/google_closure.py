@@ -31,7 +31,6 @@ def find_closure_tools(ctx, path='.'):
     find_tool('closure/bin/build', 'CLOSURE_SCRIPTS', path=ctx.root.find_node(ctx.env.CLOSURE_LIBRARY))
     find_tool('closurebuilder.py', 'CLOSURE_BUILDER', path=ctx.root.find_node(ctx.env.CLOSURE_SCRIPTS))
 
-
 def configure(ctx):
     ctx.load('python')
     ctx.find_program('java', var='JAVA')
@@ -42,14 +41,13 @@ class closure_compiler_task(Task.Task):
     vars = ['PYTHON', 'CLOSURE_BUILDER', 'CLOSURE_LIBRARY', 'CLOSURE_COMPILER']
     color = 'CYAN'
 
-    def __init__(self, namespaces, roots, target, inputs=None, source_map=None, source_map_url=None, compile_type=None, compiler_flags=[], *k, **kw):
+    def __init__(self, namespaces, roots, target, inputs=None, compile_type=None, compiler_flags=[], *k, **kw):
         Task.Task.__init__(self, *k, **kw)
 
         sys.path.append(self.env.CLOSURE_SCRIPTS)
 
-        self.treescan = __import__('treescan')
         self.depstree = __import__('depstree')
-        self.jscompiler = __import__('jscompiler')
+        self.treescan = __import__('treescan')
         self.closurebuilder = __import__('closurebuilder')
 
         self.namespaces = namespaces
@@ -58,14 +56,8 @@ class closure_compiler_task(Task.Task):
         self.paths = None
 
         self.input_nodes = inputs or []
-        self.source_map = source_map
-        self.source_map_url = source_map_url
 
         self.set_outputs(target)
-
-        if not source_map is None:
-            compiler_flags.append('--create_source_map='+source_map.abspath())
-            compiler_flags.append('--source_map_format=V3')
 
         self.compile_type = compile_type
         if compile_type == 'whitespace':
@@ -85,26 +77,29 @@ class closure_compiler_task(Task.Task):
         ]
         self.roots += roots
 
+    def jscompiler(self):
+        args = [self.env.JAVA, '-jar', self.env.CLOSURE_COMPILER_JAR]
+
+        for node in self.inputs:
+            args += ['--js', node.abspath()]
+
+        args += ['--js_output_file', self.outputs[0].abspath()]
+
+        args += self.compiler_flags
+
+        return self.bld.exec_command(args)
+
     def run(self):
 
         if self.compile_type == 'concat':
             ## Concatenate
             compiled_source = ''.join([s.read()+'\n' for s in self.inputs])
+            self.outputs[0].write(compiled_source)
+            return 0
         else:
             ## Compile
-            compiled_source = self.jscompiler.Compile(
-                    self.env.CLOSURE_COMPILER_JAR,
-                    [s.abspath() for s in self.inputs],
-                    self.compiler_flags)
+            return self.jscompiler()
 
-        if compiled_source is None:
-            self.bld.fatal('JavaScript compilation failed.')
-
-        if not self.source_map_url is None:
-            compiled_source = '//@ sourceMappingURL='+self.source_map_url+'\n'+compiled_source
-
-        self.outputs[0].write(compiled_source)
-        return 0
 
     def scan(self):
 
