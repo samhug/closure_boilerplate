@@ -1,0 +1,58 @@
+/*
+ * =========================================
+ * Helper Classes
+ * =========================================
+*/
+
+
+
+
+/* Clearfix */
+.cf {
+	&:before,
+	&:after {
+		content: " ";
+		display: table;
+	}
+
+	&:after {
+		clear: both;
+	}
+
+	*zoom: 1;
+}
+
+
+/* Horizontal */
+
+	/* non-gecko browsers */
+	.hor {
+		font-size: .000000001em;
+
+		> * {
+			font-size: 1000000000em;
+			display: inline-block;
+			vertical-align: top;
+		}
+	}
+
+	/* Firefox */
+	*>.selector {
+		.hor     { font-size: .001em }
+		.hor > * { font-size: 1000em }
+	}
+
+
+/* Elastic Layout wrapper */
+.stretcher {
+	position: relative;
+	min-width: @min-width;
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+
+/* Center inline elements */
+.center {
+	text-align: center;
+}

@@ -1,0 +1,111 @@
+/*
+ * =========================================
+ * Styles for the site-wide header
+ * =========================================
+*/
+
+
+
+
+/* <body> styles */
+
+body {
+	min-width: @min-width;
+	margin: @header-height 0 0;
+}
+
+
+
+
+/* Header */
+
+.site-header {
+	color: @link;
+	background: white;
+
+	a, button {
+		color: @link;
+		outline: 0;
+
+		&:hover, &:focus {
+			color: @link-hover;
+		}
+	}
+
+	/* Logo / Project title */
+	h1 {
+		display: inline-block;
+		margin: 0;
+		padding: 0 @header-height / 2;
+		white-space: nowrap;
+
+		a {
+			display: inline-block;
+			font-size: 24px;
+			line-height: @header-height;
+			text-decoration: inherit;
+		}
+	}
+
+	/* Menu toggle button */
+	.menu-toggle {
+		position: absolute;
+		right: @header-height / 2;
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+		border: 0;
+		font-size: 1.1em;
+		line-height: @header-height;
+		background: white;
+		cursor: pointer;
+
+		@media (min-width: 960px) {
+			display: none;
+		}
+	}
+
+	/* Navigation */
+	.site-nav {
+		height: 0;
+		overflow: hidden;
+		.transition();
+
+		@media (min-width: 960px) {
+			display: inline-block;
+			height: auto !important;
+		}
+
+		li {
+			@media (max-width: 959px) {
+				display: block;
+
+				&:nth-child(odd) a {
+					background: #e5e5e5;
+				}
+			}
+
+			a {
+				display: block;
+				text-decoration: none;
+				line-height: @header-height;
+				vertical-align: middle;
+				padding: 0 @header-height / 2;
+			}
+		}
+	}
+
+	/* toggle mobile menu */
+	@media (max-width: 959px) {
+		position: absolute;
+		top: 0;
+		z-index: 10;
+		width: 100%;
+	}
+
+	@media (min-width: 960px) {
+		&.stretcher {
+			margin: @header-height / 2 auto;
+		}
+	}
+}
