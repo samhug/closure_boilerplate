@@ -1,5 +1,10 @@
 goog.provide('closure_boilerplate.pages.test.TestHandler');
 
+goog.require('closure_boilerplate.pages.test.GetServerTimeCommand');
+
+goog.require('goog.Timer');
+goog.require('goog.events');
+
 goog.require('relief.nav.Handler');
 
 
@@ -20,6 +25,20 @@ closure_boilerplate.pages.test.TestHandler = function(sp) {
    * @private
    */
   this.sp_ = sp;
+
+
+  /**
+   * @private
+   */
+  this.timer_ = new goog.Timer(1000);
+  goog.events.listen(this.timer_, goog.Timer.TICK, function() {
+    var cmd = new closure_boilerplate.pages.test.GetServerTimeCommand(goog.bind(this.onTimeUpdate_, this));
+    this.sp_.getRPCService().execute(cmd);
+  }, true, this);
+};
+
+closure_boilerplate.pages.test.TestHandler.prototype.onTimeUpdate_ = function(time) {
+  this.sp_.getContentRoot().innerHTML = time.toIsoString(true);
 };
 
 
@@ -33,6 +52,8 @@ closure_boilerplate.pages.test.TestHandler = function(sp) {
  */
 closure_boilerplate.pages.test.TestHandler.prototype.handle = function(path) {
   this.sp_.getContentRoot().innerHTML = 'Howdy';
+
+  this.timer_.start();
 };
 
 
@@ -73,7 +94,11 @@ closure_boilerplate.pages.test.TestHandler.prototype.transition =
  */
 closure_boilerplate.pages.test.TestHandler.prototype.exit =
     function(onExit, opt_force) {
+
   this.sp_.getContentRoot().innerHTML = '';
+
+  this.timer_.stop();
+
   onExit(true);
 };
 

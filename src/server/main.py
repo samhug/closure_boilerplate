@@ -12,12 +12,12 @@ class HelloHandler(BaseAPIHandler):
         self.response.message = BaseAPIMessage('Hello World!')
 
 
-from time import strftime
+from time import gmtime, strftime
 class TimeHandler(BaseAPIHandler):
 
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.message = BaseAPIMessage(strftime('%a, %d %b %Y %H:%M:%S'))
+        self.response.message = BaseAPIMessage(strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime()))
 
 
 app = Application([
