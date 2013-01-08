@@ -10,9 +10,8 @@ goog.require('relief.rpc.Command');
  * A Command object that encapsulates a request to the server for the user's
  * auth/auth details.
  *
- * @param {function(goog.date.DateTime)} onResponse Called with a date object when
- *    the request returns.  If the request fails, null is returned.
- * @param {Object=} opt_element The element in use scope to call the callback.
+ * @param {function(goog.date.DateTime)} onResponse Called with a date object
+ *    when the request returns. If the request fails, null is returned.
  *
  * @constructor
  * @extends {relief.rpc.Command}

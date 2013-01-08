@@ -131,12 +131,18 @@ def build(ctx):
     # Config script
     params = {
             'inputs': [],
-            'compiler_flags': [],
+            'compiler_flags': [
+                '--warning_level=VERBOSE',
+                '--jscomp_error=undefinedNames',
+
+                '--jscomp_off=checkTypes',
+                ],
         }
 
     if ctx.options.mode == 'development':
         params['compile_type'] = 'simple'
         params['compiler_flags'].append('--define=\'DEBUG=true\'')
+        params['compiler_flags'].append('--formatting=PRETTY_PRINT')
     elif ctx.options.mode == 'production':
         params['compile_type'] = 'advanced'
         params['compiler_flags'].append('--define=\'DEBUG=false\'')

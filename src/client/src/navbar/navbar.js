@@ -16,6 +16,11 @@ closure_boilerplate.navbar.Navbar = function() {
   this.navEl = goog.dom.getElementByClass(goog.getCssName('site-nav'));
 
   // Toggle button
+  this.navBarHeight = 60 * goog.dom.getElementsByTagNameAndClass('li', null,
+      this.navEl).length + 'px';
+
+  this.isOpen = false;
+
   this.menuToggleEl = goog.dom.getElementByClass(
       goog.getCssName('menu-toggle'));
 
