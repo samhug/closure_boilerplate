@@ -32,12 +32,24 @@ closure_boilerplate.pages.test.TestHandler = function(sp) {
    */
   this.timer_ = new goog.Timer(1000);
   goog.events.listen(this.timer_, goog.Timer.TICK, function() {
-    var cmd = new closure_boilerplate.pages.test.GetServerTimeCommand(goog.bind(this.onTimeUpdate_, this));
+
+    var cmd = new closure_boilerplate.pages.test.GetServerTimeCommand(
+        goog.bind(this.onTimeUpdate_, this));
+
     this.sp_.getRPCService().execute(cmd);
   }, true, this);
 };
 
-closure_boilerplate.pages.test.TestHandler.prototype.onTimeUpdate_ = function(time) {
+
+/**
+ * Called when we recieve a new time from the server.
+ *
+ * @param {goog.date.DateTime} time The new time recieved for the server.
+ * @private
+ */
+closure_boilerplate.pages.test.TestHandler.prototype.onTimeUpdate_ =
+    function(time) {
+
   this.sp_.getContentRoot().innerHTML = time.toIsoString(true);
 };
 
