@@ -20,8 +20,11 @@ body {
 /* Header */
 
 .site-header {
+	height: @header-height;
 	color: @link;
 	background: white;
+	overflow: hidden;
+	.transition(height .2s ease-out);
 
 	a, button {
 		color: @link;
@@ -67,26 +70,11 @@ body {
 
 	/* Navigation */
 	.site-nav {
+		display: inline-block;
 		clear: left;
-		height: 0;
-		overflow: hidden;
-		.transition();
-
-		@media (min-width: 960px) {
-			display: inline-block;
-			height: auto !important;
-		}
 
 		li {
 			float: left;
-
-			@media (max-width: 959px) {
-				float: none;
-
-				&:nth-child(odd) a {
-					background: #e5e5e5;
-				}
-			}
 
 			a {
 				display: block;
@@ -98,14 +86,27 @@ body {
 		}
 	}
 
-	/* toggle mobile menu */
+	/* mobile menu */
 	@media (max-width: 959px) {
 		position: absolute;
 		top: 0;
 		z-index: 10;
 		width: 100%;
+
+		.site-nav {
+			display: block;
+
+			li {
+				float: none;
+
+				&:nth-child(odd) a {
+					background: #e5e5e5;
+				}
+			}
+		}
 	}
 
+	/* Contained header */
 	@media (min-width: 960px) {
 		&.stretcher {
 			margin: @header-height / 2 auto;

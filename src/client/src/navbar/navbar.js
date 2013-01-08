@@ -9,21 +9,29 @@ goog.provide('closure_boilerplate.navbar.Navbar');
  */
 closure_boilerplate.navbar.Navbar = function() {
 
+  this.NAV_ITEM_HEIGHT = 60;
+
+  // Header & Nav Elements
   this.headerEl = goog.dom.getElementByClass(goog.getCssName('site-header'));
   this.navEl = goog.dom.getElementByClass(goog.getCssName('site-nav'));
 
-  this.navBarHeight = 60 * goog.dom.getElementsByTagNameAndClass('li', null,
-      this.nav).length + 'px';
-
-  this.isOpen = false;
-
+  // Toggle button
   this.menuToggleEl = goog.dom.getElementByClass(
       goog.getCssName('menu-toggle'));
 
-  this.menuItems = goog.dom.getElementsByTagNameAndClass('a', null,
-      this.headerEl);
+  // item count
+  var nNavItems = goog.dom.getElementsByTagNameAndClass('a', null, this.headerEl).length;
 
-  // Add click event listener to the toggle button
+  // animate height
+  this.navBarHeight = this.NAV_ITEM_HEIGHT * nNavItems;
+
+  this.isOpen = false;
+
+  // navbar links
+  this.menuItems = goog.dom.getElementsByTagNameAndClass('a', null,
+      this.navEl);
+
+  // Button click event
   goog.events.listen(this.menuToggleEl,
       'click', this.onMenuToggleClicked_, true, this);
 
@@ -46,9 +54,9 @@ closure_boilerplate.navbar.Navbar.prototype.setState = function(opt_state) {
   this.isOpen = opt_state != null ? opt_state : !this.isOpen;
 
   if (this.isOpen) {
-    this.navEl.style.height = this.navBarHeight;
+    this.headerEl.style.height = this.navBarHeight + 'px';
   } else {
-    this.navEl.style.height = 0;
+    this.headerEl.style.height = this.NAV_ITEM_HEIGHT + 'px';
   }
 };
 
