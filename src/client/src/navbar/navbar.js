@@ -13,7 +13,7 @@ closure_boilerplate.navbar.Navbar = function() {
   this.navEl = goog.dom.getElementByClass(goog.getCssName('site-nav'));
 
   this.navBarHeight = 60 * goog.dom.getElementsByTagNameAndClass('li', null,
-      this.nav).length + 'px';
+      this.navEl).length + 'px';
 
   this.isOpen = false;
 
