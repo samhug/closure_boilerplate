@@ -1,4 +1,4 @@
-goog.provide('closure_boilerplate.pages.test.GetServerTimeCommand');
+goog.provide('closure_boilerplate.pages.time.GetServerTimeCommand');
 
 goog.require('goog.date.Date');
 
@@ -16,11 +16,11 @@ goog.require('relief.rpc.Command');
  * @constructor
  * @extends {relief.rpc.Command}
  */
-closure_boilerplate.pages.test.GetServerTimeCommand = function(onResponse) {
+closure_boilerplate.pages.time.GetServerTimeCommand = function(onResponse) {
   goog.base(this, onResponse, onResponse, 'GetServerTimeCommand:' + goog.now(),
             '/_/time');
 };
-goog.inherits(closure_boilerplate.pages.test.GetServerTimeCommand,
+goog.inherits(closure_boilerplate.pages.time.GetServerTimeCommand,
     relief.rpc.Command);
 
 
@@ -31,7 +31,7 @@ goog.inherits(closure_boilerplate.pages.test.GetServerTimeCommand,
  * @typedef {{result: String, error: Object}}
  * @private
  */
-closure_boilerplate.pages.test.GetServerTimeCommand.Response_;
+closure_boilerplate.pages.time.GetServerTimeCommand.Response_;
 
 
 /**
@@ -40,10 +40,10 @@ closure_boilerplate.pages.test.GetServerTimeCommand.Response_;
  * @param {goog.net.XhrManager.Event} event The COMPLETE event for the XHR Req.
  * @override
  */
-closure_boilerplate.pages.test.GetServerTimeCommand.prototype.onSuccess =
+closure_boilerplate.pages.time.GetServerTimeCommand.prototype.onSuccess =
     function(event) {
   var xhr = event.target,
-      response = /** @type {closure_boilerplate.pages.test.GetServerTimeCommand.Response_} */
+      response = /** @type {closure_boilerplate.pages.time.GetServerTimeCommand.Response_} */
       (xhr.getResponseJson());
 
   var error = response['error'];
@@ -61,7 +61,7 @@ closure_boilerplate.pages.test.GetServerTimeCommand.prototype.onSuccess =
  * @param {goog.net.XhrManager.Event} event The COMPLETE event for the XHR Req.
  * @override
  */
-closure_boilerplate.pages.test.GetServerTimeCommand.prototype.onFailure =
+closure_boilerplate.pages.time.GetServerTimeCommand.prototype.onFailure =
     function(event) {
   this.callersOnSuccess(null);
 };
