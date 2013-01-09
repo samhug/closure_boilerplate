@@ -8,7 +8,7 @@ default_expiration: "7d"
 
 handlers:
 - url: /_/.*
-  script: server.main.app
+  script: server.application.app
 
 - url: /
   static_files: client/www/index.html

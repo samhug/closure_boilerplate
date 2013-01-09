@@ -71,6 +71,16 @@ def build(ctx):
         ctx.fatal('Unable to locate YAML file at ({0})'.format(ctx.env.APPENGINE_APP_YAML))
     ctx.copy(yaml)
 
+@conf
+def generate_settings_file(ctx, settings_map, node):
+
+    settings_str = '## This file was auto generated. Any changes made to it will be lost!\n\n'
+
+    for key, value in settings_map.iteritems():
+        settings_str += ' '.join([key, '=', repr(value)])
+
+    node.write(settings_str)
+
 def serve(ctx):
     print('Starting Development Server...')
 

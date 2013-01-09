@@ -4,6 +4,8 @@ from api.Application import Application
 from api.handlers import BaseAPIHandler
 from api.messages import BaseAPIMessage
 
+import settings
+
 
 class HelloHandler(BaseAPIHandler):
 
@@ -23,4 +25,4 @@ class TimeHandler(BaseAPIHandler):
 app = Application([
         Route('/_/hello', handler=HelloHandler, name='hello'),
         Route('/_/time', handler=TimeHandler, name='time'),
-    ], debug=True)
+    ], debug=settings.DEBUG)

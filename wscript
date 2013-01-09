@@ -133,7 +133,10 @@ def build(ctx):
             'inputs': [],
             'compiler_flags': [
                 '--warning_level=VERBOSE',
+                '--jscomp_error=deprecated',
+                '--jscomp_error=visibility',
                 '--jscomp_error=undefinedNames',
+                '--jscomp_error=undefinedVars',
 
                 '--jscomp_off=checkTypes',
                 ],
@@ -175,6 +178,17 @@ def build(ctx):
                 target       = html_index.get_bld()
             )
 
+
+    ## Generate server settings file
+    server_settings = {}
+    if ctx.options.mode == 'development':
+        server_settings['DEBUG'] = True
+    elif ctx.options.mode == 'production':
+        server_settings['DEBUG'] = False
+
+    ctx.generate_settings_file(server_settings, server_dir.find_or_declare('generated_settings_.py'))
+
+
     # Copy the www directory
     for node in client_dir.ant_glob('www/**/*'):
         ctx.copy(node)
@@ -182,6 +196,7 @@ def build(ctx):
     # Copy server scripts to the build directory
     for node in server_dir.ant_glob('**/*.py'):
         ctx.copy(node)
+
 
 def fixjsstyle(ctx):
     ctx(features='fixjsstyle', roots=[ctx.path.find_dir('src/client/src')])
