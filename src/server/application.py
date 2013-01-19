@@ -1,28 +1,40 @@
 from webapp2 import Route
 
-from api.Application import Application
-from api.handlers import BaseAPIHandler
-from api.messages import BaseAPIMessage
-
-import settings
+import os, sys
 
 
-class HelloHandler(BaseAPIHandler):
-
-    def get(self):
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.message = BaseAPIMessage('Hello World!')
+def fix_path():
+    sys.path.append(os.path.dirname(__file__))
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
 
 
-from time import gmtime, strftime
-class TimeHandler(BaseAPIHandler):
+def main():
+    import settings
 
-    def get(self):
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.message = BaseAPIMessage(strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime()))
+    ## Construct URL Routes
+    routes = []
+
+    # Server Time
+    routes.append(Route('/_/time',
+            handler='services.server_time.TimeHandler',
+            name='time'
+        ))
 
 
-app = Application([
-        Route('/_/hello', handler=HelloHandler, name='hello'),
-        Route('/_/time', handler=TimeHandler, name='time'),
-    ], debug=settings.DEBUG)
+    # Guestbook
+    routes.append(Route('/_/guestbook/list',
+            handler='services.guestbook.GuestbookHandler:list_greetings',
+            name='guestbook-list'
+        ))
+    routes.append(Route('/_/guestbook/post',
+            handler='services.guestbook.GuestbookHandler:post_greeting',
+            name='guestbook-post'
+        ))
+
+    from api.Application import Application
+    return Application(routes, debug=settings.DEBUG)
+
+
+## Initialize Application
+fix_path()
+bootstrap__ = main()

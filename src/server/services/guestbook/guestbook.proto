@@ -1,0 +1,7 @@
+
+// Guestbook Note
+message Note {
+    required string key;
+    required string title;
+    required string content;
+}

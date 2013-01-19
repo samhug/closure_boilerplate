@@ -36,6 +36,8 @@ def configure(ctx):
     ctx.load('less', tooldir=TOOLDIR);
     ctx.load('utils', tooldir=TOOLDIR);
 
+    ctx.load('protoc', tooldir=TOOLDIR);
+
     ctx.find_closure_tools(path='src/client/tools')
     ctx.find_htmlcompressor(path='src/client/tools')
 
@@ -50,12 +52,14 @@ def build(ctx):
     ctx.load('htmlcssrenamer', tooldir=TOOLDIR);
     ctx.load('daemon', tooldir=TOOLDIR);
     ctx.load('less', tooldir=TOOLDIR);
+    ctx.load('protoc', tooldir=TOOLDIR);
 
     print('Building project in \'{0}\' mode.'.format(ctx.options.mode))
 
     tmp_dir    = ctx.path.find_or_declare('tmp')
     client_dir = ctx.path.find_dir('src/client')
     server_dir = ctx.path.find_dir('src/server')
+    common_dir = ctx.path.find_dir('src/common')
 
     def find_roots(paths):
         roots = set()
@@ -120,6 +124,14 @@ def build(ctx):
 
     source = itertools.chain.from_iterable([root.ant_glob('**/*.soy') for root in roots])
     ctx(source=source)
+
+
+    ###########################################################################
+    ## Protocol Buffers
+    ###########################################################################
+    messages_dir = common_dir.find_node('messages')
+    ctx(features='protoc_python', source=messages_dir.ant_glob('**/*.proto'))
+    ctx(features='protoc_js', source=messages_dir.ant_glob('**/*.proto'))
 
 
     ###########################################################################

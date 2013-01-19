@@ -5,4 +5,3 @@ from codecs import JSONCodec
 
 class BaseAPIHandler(RequestHandler):
     default_codec = JSONCodec
-

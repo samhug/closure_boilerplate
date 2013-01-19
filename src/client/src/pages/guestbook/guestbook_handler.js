@@ -1,6 +1,5 @@
-goog.provide('closure_boilerplate.pages.time.TimeHandler');
+goog.provide('closure_boilerplate.pages.guestbook.ListHandler');
 
-goog.require('closure_boilerplate.pages.time.GetServerTimeCommand');
 goog.require('closure_boilerplate.templates');
 
 goog.require('goog.Timer');
@@ -18,7 +17,7 @@ goog.require('relief.nav.Handler');
  * @constructor
  * @implements {relief.nav.Handler}
  */
-closure_boilerplate.pages.time.TimeHandler = function(sp) {
+closure_boilerplate.pages.guestbook.ListHandler = function(sp) {
   /**
    * Store the Service Provider for later.
    *
@@ -26,32 +25,6 @@ closure_boilerplate.pages.time.TimeHandler = function(sp) {
    * @private
    */
   this.sp_ = sp;
-
-
-  /**
-   * @private
-   */
-  this.timer_ = new goog.Timer(1000);
-  goog.events.listen(this.timer_, goog.Timer.TICK, function() {
-
-    var cmd = new closure_boilerplate.pages.time.GetServerTimeCommand(
-        goog.bind(this.onTimeUpdate_, this));
-
-    this.sp_.getRPCService().execute(cmd);
-  }, true, this);
-};
-
-
-/**
- * Called when we recieve a new time from the server.
- *
- * @param {goog.date.DateTime} time The new time recieved for the server.
- * @private
- */
-closure_boilerplate.pages.time.TimeHandler.prototype.onTimeUpdate_ =
-    function(time) {
-
-  this.sp_.getContentRoot().innerHTML = time.toIsoString(true);
 };
 
 
@@ -63,11 +36,8 @@ closure_boilerplate.pages.time.TimeHandler.prototype.onTimeUpdate_ =
  * @param {relief.nav.Path} path An object with request-specific parameters.
  * @override
  */
-closure_boilerplate.pages.time.TimeHandler.prototype.handle = function(path) {
-  this.sp_.getContentRoot().appendChild(soy.renderAsFragment(
-      closure_boilerplate.templates.loadingAnimation));
-
-  this.timer_.start();
+closure_boilerplate.pages.guestbook.ListHandler.prototype.handle = function(path) {
+  this.sp_.getContentRoot().innerHTML = 'This page has yet to be implemented...';
 };
 
 
@@ -86,7 +56,7 @@ closure_boilerplate.pages.time.TimeHandler.prototype.handle = function(path) {
  *    not to navigate away (called with "false").
  * @override
  */
-closure_boilerplate.pages.time.TimeHandler.prototype.transition =
+closure_boilerplate.pages.guestbook.ListHandler.prototype.transition =
     function(path, onTransition) {
   this.handle(path);
   onTransition(true);
@@ -106,12 +76,10 @@ closure_boilerplate.pages.time.TimeHandler.prototype.transition =
  *    must exit immediately.
  * @override
  */
-closure_boilerplate.pages.time.TimeHandler.prototype.exit =
+closure_boilerplate.pages.guestbook.ListHandler.prototype.exit =
     function(onExit, opt_force) {
 
   this.sp_.getContentRoot().innerHTML = '';
-
-  this.timer_.stop();
 
   onExit(true);
 };
@@ -120,7 +88,7 @@ closure_boilerplate.pages.time.TimeHandler.prototype.exit =
 /**
  * @inheritDoc
  */
-closure_boilerplate.pages.time.TimeHandler.prototype.dispose = function() {
+closure_boilerplate.pages.guestbook.ListHandler.prototype.dispose = function() {
   this.sp_ = null;
 };
 
@@ -128,6 +96,6 @@ closure_boilerplate.pages.time.TimeHandler.prototype.dispose = function() {
 /**
  * @inheritDoc
  */
-closure_boilerplate.pages.time.TimeHandler.prototype.isDisposed = function() {
+closure_boilerplate.pages.guestbook.ListHandler.prototype.isDisposed = function() {
   return this.sp_ === null;
 };
